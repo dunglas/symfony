@@ -48,7 +48,7 @@ class AnnotationLoader implements LoaderInterface
         $attributesMetadata = $classMetadata->getAttributesMetadata();
 
         foreach ($reflectionClass->getProperties() as $property) {
-            if (!isset ($attributeMetadata[$property->name])) {
+            if (!isset($attributeMetadata[$property->name])) {
                 $attributesMetadata[$property->name] = new AttributeMetadata($property->name);
                 $classMetadata->addAttributeMetadata($attributesMetadata[$property->name]);
             }
@@ -73,7 +73,7 @@ class AnnotationLoader implements LoaderInterface
                         if (preg_match('/^(get|is)(.+)$/i', $method->name, $matches)) {
                             $attributeName = lcfirst($matches[2]);
 
-                            if (isset ($attributesMetadata[$attributeName])) {
+                            if (isset($attributesMetadata[$attributeName])) {
                                 $attributeMetadata = $attributesMetadata[$attributeName];
                             } else {
                                 $attributesMetadata[$attributeName] = $attributeMetadata = new AttributeMetadata($attributeName);
