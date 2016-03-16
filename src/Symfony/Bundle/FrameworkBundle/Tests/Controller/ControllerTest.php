@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\User\User;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -40,8 +41,10 @@ class ControllerTest extends TestCase
         }));
 
         $container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
-        $container->expects($this->at(0))->method('get')->will($this->returnValue($requestStack));
-        $container->expects($this->at(1))->method('get')->will($this->returnValue($kernel));
+        $container->expects($this->at(0))->method('has')->with('request_stack')->will($this->returnValue(true));
+        $container->expects($this->at(1))->method('get')->with('request_stack')->will($this->returnValue($requestStack));
+        $container->expects($this->at(2))->method('has')->with('http_kernel')->will($this->returnValue(true));
+        $container->expects($this->at(3))->method('get')->with('http_kernel')->will($this->returnValue($kernel));
 
         $controller = new TestController();
         $controller->setContainer($container);
@@ -81,7 +84,6 @@ class ControllerTest extends TestCase
 
     /**
      * @expectedException \LogicException
-     * @expectedExceptionMessage The SecurityBundle is not registered in your application.
      */
     public function testGetUserWithEmptyContainer()
     {
@@ -99,11 +101,11 @@ class ControllerTest extends TestCase
     }
 
     /**
-     * @param $token
+     * @param TokenInterface $token
      *
      * @return ContainerInterface
      */
-    private function getContainerWithTokenStorage($token = null)
+    private function getContainerWithTokenStorage(TokenInterface $token = null)
     {
         $tokenStorage = $this->getMock('Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage');
         $tokenStorage
