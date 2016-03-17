@@ -226,7 +226,7 @@ class ControllerTraitTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Symfony\Component\Security\Core\Exception\AccessDeniedException
      */
-    public function testdenyAccessUnlessGranted()
+    public function testDenyAccessUnlessGranted()
     {
         $authorizationChecker = $this->getMock(AuthorizationCheckerInterface::class);
         $authorizationChecker->expects($this->once())->method('isGranted')->willReturn(false);
