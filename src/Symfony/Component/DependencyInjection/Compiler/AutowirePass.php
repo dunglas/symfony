@@ -65,8 +65,8 @@ class AutowirePass implements CompilerPassInterface
 
         $this->container->addClassResource($reflectionClass);
 
-        if ($constructor = $reflectionClass->getConstructor()) {
-            $this->autowireMethod($id, $definition, $constructor, true);
+        if ($isConstructor = $reflectionClass->getConstructor()) {
+            $this->autowireMethod($id, $definition, $isConstructor, true);
         }
 
         $methodsCalled = array();
@@ -90,16 +90,14 @@ class AutowirePass implements CompilerPassInterface
      * @param string            $id
      * @param Definition        $definition
      * @param \ReflectionMethod $reflectionMethod
-     * @param bool              $constructor
+     * @param bool              $isConstructor
      *
      * @throws RuntimeException
      */
-    private function autowireMethod($id, Definition $definition, \ReflectionMethod $reflectionMethod, $constructor)
+    private function autowireMethod($id, Definition $definition, \ReflectionMethod $reflectionMethod, $isConstructor)
     {
-        if ($constructor) {
+        if ($isConstructor) {
             $arguments = $definition->getArguments();
-        } elseif (0 === $reflectionMethod->getNumberOfParameters()) {
-            return;
         } else {
             $arguments = array();
         }
@@ -158,7 +156,7 @@ class AutowirePass implements CompilerPassInterface
         // make sure that we re-order so they're injected as expected
         ksort($arguments);
 
-        if ($constructor) {
+        if ($isConstructor) {
             $definition->setArguments($arguments);
 
             return;
