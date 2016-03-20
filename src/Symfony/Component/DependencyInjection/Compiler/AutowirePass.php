@@ -65,12 +65,46 @@ class AutowirePass implements CompilerPassInterface
 
         $this->container->addClassResource($reflectionClass);
 
-        if (!$constructor = $reflectionClass->getConstructor()) {
-            return;
+        if ($constructor = $reflectionClass->getConstructor()) {
+            $this->autowireMethod($id, $definition, $constructor, true);
         }
 
-        $arguments = $definition->getArguments();
-        foreach ($constructor->getParameters() as $index => $parameter) {
+        $methodsCalled = array();
+        foreach ($definition->getMethodCalls() as $methodCall) {
+            $methodsCalled[$methodCall[0]] = true;
+        }
+
+        foreach ($reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $reflectionMethod) {
+            $name = $reflectionMethod->getName();
+            if (isset($methodsCalled[$name]) || $reflectionMethod->isStatic() || 1 !== $reflectionMethod->getNumberOfParameters() || 0 !== strpos($name, 'set')) {
+                continue;
+            }
+
+            $this->autowireMethod($id, $definition, $reflectionMethod, false);
+        }
+    }
+
+    /**
+     * Autowires the constructor or a setter.
+     *
+     * @param string            $id
+     * @param Definition        $definition
+     * @param \ReflectionMethod $reflectionMethod
+     * @param bool              $constructor
+     *
+     * @throws RuntimeException
+     */
+    private function autowireMethod($id, Definition $definition, \ReflectionMethod $reflectionMethod, $constructor)
+    {
+        if ($constructor) {
+            $arguments = $definition->getArguments();
+        } elseif (0 === $reflectionMethod->getNumberOfParameters()) {
+            return;
+        } else {
+            $arguments = array();
+        }
+
+        foreach ($reflectionMethod->getParameters() as $index => $parameter) {
             if (array_key_exists($index, $arguments) && '' !== $arguments[$index]) {
                 continue;
             }
@@ -79,7 +113,7 @@ class AutowirePass implements CompilerPassInterface
                 if (!$typeHint = $parameter->getClass()) {
                     // no default value? Then fail
                     if (!$parameter->isOptional()) {
-                        throw new RuntimeException(sprintf('Unable to autowire argument index %d ($%s) for the service "%s". If this is an object, give it a type-hint. Otherwise, specify this argument\'s value explicitly.', $index, $parameter->name, $id));
+                        throw new RuntimeException(sprintf('Unable to autowire argument index %d ($%s) of the method "%s" for the service "%s". If this is an object, give it a type-hint. Otherwise, specify this argument\'s value explicitly.', $index, $parameter->name, $reflectionMethod->name, $id));
                     }
 
                     // specifically pass the default value
@@ -111,7 +145,7 @@ class AutowirePass implements CompilerPassInterface
                 // Typehint against a non-existing class
 
                 if (!$parameter->isDefaultValueAvailable()) {
-                    throw new RuntimeException(sprintf('Cannot autowire argument %s for %s because the type-hinted class does not exist (%s).', $index + 1, $definition->getClass(), $reflectionException->getMessage()), 0, $reflectionException);
+                    throw new RuntimeException(sprintf('Cannot autowire argument %s of the method "%s" for "%s" because the type-hinted class does not exist ("%s").', $index + 1, $reflectionMethod->name, $definition->getClass(), $reflectionException->getMessage()), 0, $reflectionException);
                 }
 
                 $value = $parameter->getDefaultValue();
@@ -123,7 +157,14 @@ class AutowirePass implements CompilerPassInterface
         // it's possible index 1 was set, then index 0, then 2, etc
         // make sure that we re-order so they're injected as expected
         ksort($arguments);
-        $definition->setArguments($arguments);
+
+        if ($constructor) {
+            $definition->setArguments($arguments);
+
+            return;
+        }
+
+        $definition->addMethodCall($reflectionMethod->name, $arguments);
     }
 
     /**
