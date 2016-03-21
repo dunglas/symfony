@@ -65,8 +65,8 @@ class AutowirePass implements CompilerPassInterface
 
         $this->container->addClassResource($reflectionClass);
 
-        if ($constructor = $reflectionClass->getConstructor()) {
-            $this->autowireMethod($id, $definition, $constructor, true);
+        if ($isConstructor = $reflectionClass->getConstructor()) {
+            $this->autowireMethod($id, $definition, $isConstructor, true);
         }
 
         $methodsCalled = array();
@@ -90,20 +90,19 @@ class AutowirePass implements CompilerPassInterface
      * @param string            $id
      * @param Definition        $definition
      * @param \ReflectionMethod $reflectionMethod
-     * @param bool              $constructor
+     * @param bool              $isConstructor
      *
      * @throws RuntimeException
      */
-    private function autowireMethod($id, Definition $definition, \ReflectionMethod $reflectionMethod, $constructor)
+    private function autowireMethod($id, Definition $definition, \ReflectionMethod $reflectionMethod, $isConstructor)
     {
-        if ($constructor) {
+        if ($isConstructor) {
             $arguments = $definition->getArguments();
-        } elseif (0 === $reflectionMethod->getNumberOfParameters()) {
-            return;
         } else {
             $arguments = array();
         }
 
+        $addMethodCall = false;
         foreach ($reflectionMethod->getParameters() as $index => $parameter) {
             if (array_key_exists($index, $arguments) && '' !== $arguments[$index]) {
                 continue;
@@ -113,7 +112,11 @@ class AutowirePass implements CompilerPassInterface
                 if (!$typeHint = $parameter->getClass()) {
                     // no default value? Then fail
                     if (!$parameter->isOptional()) {
-                        throw new RuntimeException(sprintf('Unable to autowire argument index %d ($%s) of the method "%s" for the service "%s". If this is an object, give it a type-hint. Otherwise, specify this argument\'s value explicitly.', $index, $parameter->name, $reflectionMethod->name, $id));
+                        if ($isConstructor) {
+                            throw new RuntimeException(sprintf('Unable to autowire argument index %d ($%s) for the service "%s". If this is an object, give it a type-hint. Otherwise, specify this argument\'s value explicitly.', $index, $parameter->name, $id));
+                        }
+
+                        return;
                     }
 
                     // specifically pass the default value
@@ -128,16 +131,22 @@ class AutowirePass implements CompilerPassInterface
 
                 if (isset($this->types[$typeHint->name])) {
                     $value = new Reference($this->types[$typeHint->name]);
+                    $addMethodCall = true;
                 } else {
                     try {
                         $value = $this->createAutowiredDefinition($typeHint, $id);
+                        $addMethodCall = true;
                     } catch (RuntimeException $e) {
                         if ($parameter->allowsNull()) {
                             $value = null;
                         } elseif ($parameter->isDefaultValueAvailable()) {
                             $value = $parameter->getDefaultValue();
                         } else {
-                            throw $e;
+                            if ($isConstructor) {
+                                throw $e;
+                            }
+
+                            return;
                         }
                     }
                 }
@@ -145,7 +154,11 @@ class AutowirePass implements CompilerPassInterface
                 // Typehint against a non-existing class
 
                 if (!$parameter->isDefaultValueAvailable()) {
-                    throw new RuntimeException(sprintf('Cannot autowire argument %s of the method "%s" for "%s" because the type-hinted class does not exist ("%s").', $index + 1, $reflectionMethod->name, $definition->getClass(), $reflectionException->getMessage()), 0, $reflectionException);
+                    if ($isConstructor) {
+                        throw new RuntimeException(sprintf('Cannot autowire argument %s for %s because the type-hinted class does not exist (%s).', $index + 1, $definition->getClass(), $reflectionException->getMessage()), 0, $reflectionException);
+                    }
+
+                    return;
                 }
 
                 $value = $parameter->getDefaultValue();
@@ -158,13 +171,11 @@ class AutowirePass implements CompilerPassInterface
         // make sure that we re-order so they're injected as expected
         ksort($arguments);
 
-        if ($constructor) {
+        if ($isConstructor) {
             $definition->setArguments($arguments);
-
-            return;
+        } elseif ($addMethodCall) {
+            $definition->addMethodCall($reflectionMethod->name, $arguments);
         }
-
-        $definition->addMethodCall($reflectionMethod->name, $arguments);
     }
 
     /**
