@@ -76,7 +76,7 @@ class AutowirePass implements CompilerPassInterface
 
         foreach ($reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $reflectionMethod) {
             $name = $reflectionMethod->getName();
-            if (isset($methodsCalled[$name]) || $reflectionMethod->isStatic() || 0 !== strpos($name, 'set')) {
+            if (isset($methodsCalled[$name]) || $reflectionMethod->isStatic() || 1 !== $reflectionMethod->getNumberOfParameters() || 0 !== strpos($name, 'set')) {
                 continue;
             }
 
@@ -112,7 +112,7 @@ class AutowirePass implements CompilerPassInterface
                 if (!$typeHint = $parameter->getClass()) {
                     // no default value? Then fail
                     if (!$parameter->isOptional()) {
-                        if ($constructor) {
+                        if ($isConstructor) {
                             throw new RuntimeException(sprintf('Unable to autowire argument index %d ($%s) for the service "%s". If this is an object, give it a type-hint. Otherwise, specify this argument\'s value explicitly.', $index, $parameter->name, $id));
                         }
 
@@ -142,7 +142,7 @@ class AutowirePass implements CompilerPassInterface
                         } elseif ($parameter->isDefaultValueAvailable()) {
                             $value = $parameter->getDefaultValue();
                         } else {
-                            if ($constructor) {
+                            if ($isConstructor) {
                                 throw $e;
                             }
 
@@ -154,7 +154,7 @@ class AutowirePass implements CompilerPassInterface
                 // Typehint against a non-existing class
 
                 if (!$parameter->isDefaultValueAvailable()) {
-                    if ($constructor) {
+                    if ($isConstructor) {
                         throw new RuntimeException(sprintf('Cannot autowire argument %s for %s because the type-hinted class does not exist (%s).', $index + 1, $definition->getClass(), $reflectionException->getMessage()), 0, $reflectionException);
                     }
 

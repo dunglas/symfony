@@ -438,7 +438,7 @@ class AutowirePassTest extends \PHPUnit_Framework_TestCase
             return $call[0];
         }, $methodCalls);
         $this->assertEquals(
-            array('setWithCallsConfigured', 'setFoo', 'setDependencies', 'setOptionalArgNoAutowireable'),
+            array('setWithCallsConfigured', 'setFoo'),
             $actualMethodNameCalls
         );
 
@@ -451,16 +451,6 @@ class AutowirePassTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             array(new Reference('app_foo')),
             $methodCalls[1][1]
-        );
-        // test setDependencies args
-        $this->assertEquals(
-            array(new Reference('app_foo'), new Reference('app_a')),
-            $methodCalls[2][1]
-        );
-        // test setOptionalArgNoAutowireable args
-        $this->assertEquals(
-            array(new Reference('app_a'), 'default_val'),
-            $methodCalls[3][1]
         );
     }
 }
@@ -658,12 +648,7 @@ class SetterInjection
         // should not be called
     }
 
-    public function setOptionalArgNoAutowireable(A $a, $other = 'default_val')
-    {
-        // should be called, but only 1 argument is passed
-    }
-
-    public function setCannotAutowireAllArguments(A $a, $other)
+    public function setOptionalArgNoAutowireable($other = 'default_val')
     {
         // should not be called
     }

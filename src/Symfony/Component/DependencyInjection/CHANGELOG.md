@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+3.1.0
+-----
+
+* added support for setter autowiring
+
 3.0.0
 -----
 
