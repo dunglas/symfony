@@ -270,7 +270,7 @@ class AutowirePassTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \Symfony\Component\DependencyInjection\Exception\RuntimeException
-     * @expectedExceptionMessage Cannot autowire argument 2 of the method "__construct" for "Symfony\Component\DependencyInjection\Tests\Compiler\BadTypeHintedArgument" because the type-hinted class does not exist ("Class Symfony\Component\DependencyInjection\Tests\Compiler\NotARealClass does not exist").
+     * @expectedExceptionMessage Cannot autowire argument 2 for Symfony\Component\DependencyInjection\Tests\Compiler\BadTypeHintedArgument because the type-hinted class does not exist (Class Symfony\Component\DependencyInjection\Tests\Compiler\NotARealClass does not exist).
      */
     public function testClassNotFoundThrowsException()
     {
@@ -329,7 +329,7 @@ class AutowirePassTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \Symfony\Component\DependencyInjection\Exception\RuntimeException
-     * @expectedExceptionMessage Unable to autowire argument index 1 ($foo) of the method "__construct" for the service "arg_no_type_hint". If this is an object, give it a type-hint. Otherwise, specify this argument's value explicitly.
+     * @expectedExceptionMessage Unable to autowire argument index 1 ($foo) for the service "arg_no_type_hint". If this is an object, give it a type-hint. Otherwise, specify this argument's value explicitly.
      */
     public function testScalarArgsCannotBeAutowired()
     {
@@ -348,7 +348,7 @@ class AutowirePassTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \Symfony\Component\DependencyInjection\Exception\RuntimeException
-     * @expectedExceptionMessage Unable to autowire argument index 1 ($foo) of the method "__construct" for the service "not_really_optional_scalar". If this is an object, give it a type-hint. Otherwise, specify this argument's value explicitly.
+     * @expectedExceptionMessage Unable to autowire argument index 1 ($foo) for the service "not_really_optional_scalar". If this is an object, give it a type-hint. Otherwise, specify this argument's value explicitly.
      */
     public function testOptionalScalarNotReallyOptionalThrowException()
     {
@@ -434,11 +434,11 @@ class AutowirePassTest extends \PHPUnit_Framework_TestCase
         $methodCalls = $container->getDefinition('setter_injection')->getMethodCalls();
 
         // grab the call method names
-        $actualMethodNameCalls = array_map(function ($call) {
+        $actualMethodNameCalls = array_map(function($call) {
             return $call[0];
         }, $methodCalls);
         $this->assertEquals(
-            array('setWithCallsConfigured', 'setFoo', 'setOptionalNotAutowireable', 'setOptionalNoTypeHint'),
+            array('setWithCallsConfigured', 'setFoo', 'setDependencies', 'setOptionalArgNoAutowireable'),
             $actualMethodNameCalls
         );
 
@@ -447,56 +447,21 @@ class AutowirePassTest extends \PHPUnit_Framework_TestCase
             array('manual_arg1', 'manual_arg2'),
             $methodCalls[0][1]
         );
-
         // test setFoo args
         $this->assertEquals(
             array(new Reference('app_foo')),
             $methodCalls[1][1]
         );
-
-        // test setOptionalNotAutowireable args
+        // test setDependencies args
         $this->assertEquals(
-            array(null),
-            $methodCalls[2][1])
-        ;
-
-        // test setOptionalNoTypeHint args
+            array(new Reference('app_foo'), new Reference('app_a')),
+            $methodCalls[2][1]
+        );
+        // test setOptionalArgNoAutowireable args
         $this->assertEquals(
-            array(null),
+            array(new Reference('app_a'), 'default_val'),
             $methodCalls[3][1]
         );
-    }
-
-    /**
-     * @expectedException \Symfony\Component\DependencyInjection\Exception\RuntimeException
-     * @expectedExceptionMessage Cannot autowire argument 1 of the method "setNotAutowireable" for "Symfony\Component\DependencyInjection\Tests\Compiler\SetterInjectionNotARealClass" because the type-hinted class does not exist ("Class Symfony\Component\DependencyInjection\Tests\Compiler\NotARealClass does not exist").
-     */
-    public function testSetterInjectionNotARealClassThrowsException()
-    {
-        $container = new ContainerBuilder();
-        $container
-            ->register('setter_injection', SetterInjectionNotARealClass::class)
-            ->setAutowired(true)
-        ;
-
-        $pass = new AutowirePass();
-        $pass->process($container);
-    }
-
-    /**
-     * @expectedException \Symfony\Component\DependencyInjection\Exception\RuntimeException
-     * @expectedExceptionMessage Unable to autowire argument index 0 ($foo) of the method "setArgCannotAutowire" for the service "setter_injection". If this is an object, give it a type-hint. Otherwise, specify this argument's value explicitly.
-     */
-    public function testSetterInjectionNoTypeHintThrowsException()
-    {
-        $container = new ContainerBuilder();
-        $container
-            ->register('setter_injection', SetterInjectionNoTypeHint::class)
-            ->setAutowired(true)
-        ;
-
-        $pass = new AutowirePass();
-        $pass->process($container);
     }
 }
 
@@ -657,43 +622,55 @@ class SetterInjection
 
     public function setDependencies(Foo $foo, A $a)
     {
-        // should not be called: more than 1 argument
+        // should be called
     }
 
     public function setBar()
     {
-        // should not be called: no argument
+        // should not be called
+    }
+
+    public function setNotAutowireable(NotARealClass $n)
+    {
+        // should not be called
+        // ???
+    }
+
+    public function setArgCannotAutowire($foo)
+    {
+        // should not be called
     }
 
     public function setOptionalNotAutowireable(NotARealClass $n = null)
     {
-        // should be called with "null" as parameter
+        // should not be called
     }
 
     public function setOptionalNoTypeHint($foo = null)
     {
-        // should be called with "null" as parameter
+        // should not be called
+    }
+
+    public function setMultipleAutowiringMultipleInstancesForOneArg(A $a, CollisionInterface $collision)
+    {
+        // The CollisionInterface cannot be autowired - there are multiple
+
+        // should not be called
+    }
+
+    public function setOptionalArgNoAutowireable(A $a, $other = 'default_val')
+    {
+        // should be called, but only 1 argument is passed
+    }
+
+    public function setCannotAutowireAllArguments(A $a, $other)
+    {
+        // should not be called
     }
 
     public function setWithCallsConfigured(A $a)
     {
         // this method has a calls configured on it
         // should not be called
-    }
-}
-
-class SetterInjectionNotARealClass
-{
-    public function setNotAutowireable(NotARealClass $n)
-    {
-        // should throw an exception
-    }
-}
-
-class SetterInjectionNoTypeHint
-{
-    public function setArgCannotAutowire($foo)
-    {
-        // should throw an exception
     }
 }
