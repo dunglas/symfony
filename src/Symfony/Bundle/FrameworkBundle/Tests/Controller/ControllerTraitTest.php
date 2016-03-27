@@ -79,10 +79,10 @@ class ControllerTraitTest extends \PHPUnit_Framework_TestCase
     public function testRedirect()
     {
         $controller = new TestTrait();
-        $response = $controller->redirect('http://dunglas.fr', 301);
+        $response = $controller->redirect('http://example.com', 301);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertSame('http://dunglas.fr', $response->getTargetUrl());
+        $this->assertSame('http://example.com', $response->getTargetUrl());
         $this->assertSame(301, $response->getStatusCode());
     }
 
