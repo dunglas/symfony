@@ -100,7 +100,7 @@
       <xsd:element name="tag" type="tag" minOccurs="0" maxOccurs="unbounded" />
       <xsd:element name="property" type="property" minOccurs="0" maxOccurs="unbounded" />
       <xsd:element name="autowiring-type" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
-      <xsd:element name="autowire" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="autowire" type="autowire" minOccurs="0" maxOccurs="1" />
     </xsd:choice>
     <xsd:attribute name="id" type="xsd:string" />
     <xsd:attribute name="class" type="xsd:string" />
@@ -172,6 +172,12 @@
       <xsd:element name="service" type="service" />
     </xsd:choice>
     <xsd:attribute name="method" type="xsd:string" />
+  </xsd:complexType>
+
+  <xsd:complexType name="autowire">
+    <xsd:choice minOccurs="0" maxOccurs="unbounded">
+      <xsd:element name="method" type="xsd:string" />
+    </xsd:choice>
   </xsd:complexType>
 
   <xsd:simpleType name="parameter_type">
