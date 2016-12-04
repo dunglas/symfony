@@ -239,17 +239,19 @@ class XmlFileLoader extends FileLoader
             $definition->addAutowiringType($type->textContent);
         }
 
-        $autowireTags = array();
-        foreach ($this->getChildren($service, 'autowire') as $type) {
-            $autowireTags[] = $type->textContent;
-        }
-
-        if ($autowireTags) {
+        if ($autowireTags = $this->getChildren($service, 'autowire')) {
             if ($service->hasAttribute('autowire')) {
-                throw new InvalidArgumentException(sprintf('The "autowire" attribute cannot be used together with "<autowire>" tags for service "%s" in %s.', (string) $service->getAttribute('id'), $file));
+                throw new InvalidArgumentException(sprintf('The "autowire" attribute cannot be used together with the "<autowire>" tag for service "%s" in %s. Use one or the other.', (string) $service->getAttribute('id'), $file));
             }
 
-            $definition->setAutowiredMethods($autowireTags);
+            $methodTags = array();
+            foreach ($this->getChildren($autowireTags[0], 'method') as $type) {
+                $methodTags[] = $type->textContent;
+            }
+
+            if ($methodTags) {
+                $definition->setAutowiredMethods($methodTags);
+            }
         }
 
         if ($value = $service->getAttribute('decorates')) {
