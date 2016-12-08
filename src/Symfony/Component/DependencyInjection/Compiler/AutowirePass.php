@@ -43,6 +43,7 @@ class AutowirePass implements CompilerPassInterface
 
         try {
             $this->container = $container;
+
             foreach ($container->getDefinitions() as $id => $definition) {
                 if ($autowiredMethods = $definition->getAutowiredMethods()) {
                     $this->completeDefinition($id, $definition, $autowiredMethods);
@@ -173,6 +174,11 @@ class AutowirePass implements CompilerPassInterface
         $addMethodCall = false; // Whether the method should be added to the definition as a call or as arguments
         foreach ($reflectionMethod->getParameters() as $index => $parameter) {
             if (array_key_exists($index, $arguments) && '' !== $arguments[$index]) {
+                continue;
+            }
+
+            if ($this->container->hasParameter($parameter->name)) {
+                $arguments[$index] = $this->container->getParameter($parameter->name);
                 continue;
             }
 

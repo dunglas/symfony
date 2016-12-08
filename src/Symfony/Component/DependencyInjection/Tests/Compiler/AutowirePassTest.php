@@ -575,6 +575,17 @@ class AutowirePassTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(array(AutowirePass::class.': Autowiring\'s patterns "not", "exist*" for service "foo" don\'t match any method.'), $container->getCompiler()->getLog());
     }
+
+    public function testParameterInjection()
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('myParameter', 'SymfonyCon Berlin Hackday!');
+        $parameterInjectionDefinition = $container->register(ParameterInjection::class, ParameterInjection::class);
+        $parameterInjectionDefinition->setAutowired(true);
+        $pass = new AutowirePass();
+        $pass->process($container);
+        $this->assertEquals('SymfonyCon Berlin Hackday!', $parameterInjectionDefinition->getArgument(1));
+    }
 }
 
 class Foo
@@ -755,6 +766,7 @@ class ClassChangedConstructorArgs extends ClassForResource
     }
 }
 
+<<<<<<< HEAD
 class SetterInjection
 {
     public function setFoo(Foo $foo)
@@ -816,5 +828,12 @@ class SetterInjectionCollision
         // The CollisionInterface cannot be autowired - there are multiple
 
         // should throw an exception
+}
+}
+
+class ParameterInjection
+{
+    public function __construct(Foo $foo, $myParameter)
+    {
     }
 }
