@@ -766,7 +766,6 @@ class ClassChangedConstructorArgs extends ClassForResource
     }
 }
 
-<<<<<<< HEAD
 class SetterInjection
 {
     public function setFoo(Foo $foo)
@@ -828,7 +827,7 @@ class SetterInjectionCollision
         // The CollisionInterface cannot be autowired - there are multiple
 
         // should throw an exception
-}
+    }
 }
 
 class ParameterInjection
