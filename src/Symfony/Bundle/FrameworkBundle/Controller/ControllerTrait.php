@@ -393,6 +393,7 @@ trait ControllerTrait
     {
         $response = new BinaryFileResponse($file);
         $response->setContentDisposition($disposition, $fileName === null ? $response->getFile()->getFileName() : $fileName);
+
         return $response;
     }
 
