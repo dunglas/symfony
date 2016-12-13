@@ -211,7 +211,7 @@ class AutowirePass implements CompilerPassInterface
                             $value = $parameter->getDefaultValue();
                         } else {
                             // The exception code is set to 1 if the exception must be thrown even if it's a setter
-                            if (1 === $e->getCode() || $isConstructor) {
+                            if ($e->getAlwaysThrow() || $isConstructor) {
                                 throw $e;
                             }
 
@@ -342,7 +342,10 @@ class AutowirePass implements CompilerPassInterface
             $classOrInterface = $typeHint->isInterface() ? 'interface' : 'class';
             $matchingServices = implode(', ', $this->ambiguousServiceTypes[$typeHint->name]);
 
-            throw new RuntimeException(sprintf('Unable to autowire argument of type "%s" for the service "%s". Multiple services exist for this %s (%s).', $typeHint->name, $id, $classOrInterface, $matchingServices), 1);
+            $e = new RuntimeException(sprintf('Unable to autowire argument of type "%s" for the service "%s". Multiple services exist for this %s (%s).', $typeHint->name, $id, $classOrInterface, $matchingServices));
+            $e->setAlwaysThrow(true);
+
+            throw $e;
         }
 
         if (!$typeHint->isInstantiable()) {

@@ -18,4 +18,25 @@ namespace Symfony\Component\DependencyInjection\Exception;
  */
 class RuntimeException extends \RuntimeException implements ExceptionInterface
 {
+    private $alwaysThrow = false;
+
+    /**
+     * This exception must always be thrown (useful for the AutowirePass).
+     *
+     * @param bool $alwaysThrow
+     */
+    public function setAlwaysThrow($alwaysThrow)
+    {
+        $this->alwaysThrow = $alwaysThrow;
+    }
+
+    /**
+     * Should this exception always be thrown? (useful for the AutowirePass).
+     *
+     * @return bool
+     */
+    public function getAlwaysThrow()
+    {
+        return $this->alwaysThrow;
+    }
 }
