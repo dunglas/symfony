@@ -51,6 +51,7 @@ class ResolveParameterPlaceHoldersPass implements CompilerPassInterface
                 }
                 $definition->setMethodCalls($calls);
 
+                $definition->setOverriddenGetters($parameterBag->resolveValue($definition->getOverriddenGetters()));
                 $definition->setProperties($parameterBag->resolveValue($definition->getProperties()));
             } catch (ParameterNotFoundException $e) {
                 $e->setSourceId($id);

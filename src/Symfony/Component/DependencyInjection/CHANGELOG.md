@@ -4,6 +4,7 @@ CHANGELOG
 3.3.0
 -----
 
+ * added support for getter-injection
  * added "iterator" argument type for lazy iteration over a set of values and services
  * added "closure-proxy" argument type for turning services' methods into lazy callables
  * added file-wide configurable defaults for service attributes "public", "tags",

@@ -48,6 +48,7 @@ class CheckReferenceValidityPass implements CompilerPassInterface
 
             $this->validateReferences($definition->getArguments());
             $this->validateReferences($definition->getMethodCalls());
+            $this->validateReferences($definition->getOverriddenGetters());
             $this->validateReferences($definition->getProperties());
         }
     }

@@ -54,6 +54,17 @@ class ResolveInvalidReferencesPass implements CompilerPassInterface
             }
             $definition->setMethodCalls($calls);
 
+            $getters = array();
+            foreach ($definition->getOverriddenGetters() as $name => $value) {
+                try {
+                    $value = $this->processArguments(array($value), true);
+                    $getters[$name] = reset($value);
+                } catch (RuntimeException $e) {
+                    // this call is simply removed
+                }
+            }
+            $definition->setOverriddenGetters($getters);
+
             $properties = array();
             foreach ($definition->getProperties() as $name => $value) {
                 try {

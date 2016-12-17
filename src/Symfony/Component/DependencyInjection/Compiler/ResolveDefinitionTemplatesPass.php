@@ -75,6 +75,7 @@ class ResolveDefinitionTemplatesPass implements CompilerPassInterface
                 }
                 $argument->setArguments($this->resolveArguments($container, $argument->getArguments()));
                 $argument->setMethodCalls($this->resolveArguments($container, $argument->getMethodCalls()));
+                $argument->setOverriddenGetters($this->resolveArguments($container, $argument->getOverriddenGetters()));
                 $argument->setProperties($this->resolveArguments($container, $argument->getProperties()));
 
                 $configurator = $this->resolveArguments($container, array($argument->getConfigurator()));
@@ -134,6 +135,7 @@ class ResolveDefinitionTemplatesPass implements CompilerPassInterface
         $def->setClass($parentDef->getClass());
         $def->setArguments($parentDef->getArguments());
         $def->setMethodCalls($parentDef->getMethodCalls());
+        $def->setOverriddenGetters($parentDef->getOverriddenGetters());
         $def->setProperties($parentDef->getProperties());
         $def->setAutowiringTypes($parentDef->getAutowiringTypes());
         if ($parentDef->isDeprecated()) {
@@ -204,6 +206,11 @@ class ResolveDefinitionTemplatesPass implements CompilerPassInterface
         // append method calls
         if ($calls = $definition->getMethodCalls()) {
             $def->setMethodCalls(array_merge($def->getMethodCalls(), $calls));
+        }
+
+        // merge overridden getters
+        foreach ($definition->getOverriddenGetters() as $k => $v) {
+            $def->setOverriddenGetter($k, $v);
         }
 
         // merge autowiring types

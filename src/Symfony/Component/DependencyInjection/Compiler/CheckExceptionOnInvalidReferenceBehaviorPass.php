@@ -42,6 +42,7 @@ class CheckExceptionOnInvalidReferenceBehaviorPass implements CompilerPassInterf
     {
         $this->processReferences($definition->getArguments());
         $this->processReferences($definition->getMethodCalls());
+        $this->processReferences($definition->getOverriddenGetters());
         $this->processReferences($definition->getProperties());
     }
 

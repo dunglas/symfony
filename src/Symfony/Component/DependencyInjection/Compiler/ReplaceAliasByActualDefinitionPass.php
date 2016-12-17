@@ -77,6 +77,7 @@ class ReplaceAliasByActualDefinitionPass implements CompilerPassInterface
         foreach ($container->getDefinitions() as $definitionId => $definition) {
             $definition->setArguments($this->updateArgumentReferences($replacements, $definitionId, $definition->getArguments()));
             $definition->setMethodCalls($this->updateArgumentReferences($replacements, $definitionId, $definition->getMethodCalls()));
+            $definition->setOverriddenGetters($this->updateArgumentReferences($replacements, $definitionId, $definition->getOverriddenGetters()));
             $definition->setProperties($this->updateArgumentReferences($replacements, $definitionId, $definition->getProperties()));
             $definition->setFactory($this->updateFactoryReference($replacements, $definition->getFactory()));
         }

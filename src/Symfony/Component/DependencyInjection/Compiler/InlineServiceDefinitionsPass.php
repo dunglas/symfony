@@ -87,6 +87,7 @@ class InlineServiceDefinitionsPass implements RepeatablePassInterface
             } elseif ($argument instanceof Definition) {
                 $argument->setArguments($this->inlineArguments($container, $argument->getArguments()));
                 $argument->setMethodCalls($this->inlineArguments($container, $argument->getMethodCalls()));
+                $argument->setOverriddenGetters($this->inlineArguments($container, $argument->getOverriddenGetters()));
                 $argument->setProperties($this->inlineArguments($container, $argument->getProperties()));
 
                 $configurator = $this->inlineArguments($container, array($argument->getConfigurator()));
