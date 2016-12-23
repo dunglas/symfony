@@ -14,6 +14,7 @@ namespace Symfony\Component\DependencyInjection\Tests\Compiler;
 use Symfony\Component\DependencyInjection\Compiler\AutowirePass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\DependencyInjection\Tests\Fixtures\GetterOverriding;
 
 /**
  * @author Kévin Dunglas <dunglas@gmail.com>
@@ -498,6 +499,31 @@ class AutowirePassTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @requires PHP 7.1
+     */
+    public function testGetterOverriding()
+    {
+        $container = new ContainerBuilder();
+        $container->register('b', B::class);
+
+        $container
+            ->register('getter_overriding', GetterOverriding::class)
+            ->setOverriddenGetter('getExplicitlyDefined', new Reference('b'))
+            ->setAutowiredMethods(array('get*'))
+        ;
+
+        $pass = new AutowirePass();
+        $pass->process($container);
+
+        $overridenGetters = $container->getDefinition('getter_overriding')->getOverriddenGetters();
+        $this->assertEquals($overridenGetters, array(
+            'getExplicitlyDefined' => new Reference('b'),
+            'getFoo' => new Reference('autowired.symfony\component\dependencyinjection\tests\compiler\foo'),
+            'getBar' => new Reference('autowired.symfony\component\dependencyinjection\tests\compiler\bar'),
+        ));
+    }
+
+    /**
      * @dataProvider getCreateResourceTests
      */
     public function testCreateResourceForClass($className, $isEqual)
@@ -806,6 +832,11 @@ class SetterInjection
     public function notASetter(A $a)
     {
         // should be called only when explicitly specified
+    }
+
+    protected function setProtectedMethod(A $a)
+    {
+        // should not be called
     }
 }
 

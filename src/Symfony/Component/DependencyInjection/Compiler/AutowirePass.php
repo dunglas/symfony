@@ -108,6 +108,10 @@ class AutowirePass implements CompilerPassInterface
             $methodsCalled[$methodCall[0]] = true;
         }
 
+        foreach ($definition->getOverriddenGetters() as $overriddenGetter => $returnValue) {
+            $methodsCalled[$overriddenGetter] = true;
+        }
+
         foreach ($this->getMethodsToAutowire($id, $reflectionClass, $autowiredMethods) as $reflectionMethod) {
             if (!isset($methodsCalled[$reflectionMethod->name])) {
                 $this->autowireMethod($id, $definition, $reflectionMethod);
@@ -132,7 +136,7 @@ class AutowirePass implements CompilerPassInterface
             $regexList[] = '/^'.str_replace('\*', '.*', preg_quote($pattern, '/')).'$/i';
         }
 
-        foreach ($reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $reflectionMethod) {
+        foreach ($reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC | \ReflectionMethod::IS_PROTECTED) as $reflectionMethod) {
             if ($reflectionMethod->isStatic()) {
                 continue;
             }
@@ -164,6 +168,19 @@ class AutowirePass implements CompilerPassInterface
      */
     private function autowireMethod($id, Definition $definition, \ReflectionMethod $reflectionMethod)
     {
+        if (null === $this->types) {
+            $this->populateAvailableTypes();
+        }
+
+        if ($this->overrideGetter($id, $definition, $reflectionMethod)) {
+            return;
+        }
+
+        if ($reflectionMethod->isProtected()) {
+            // Only getter overriding is supported for protected methods
+            return;
+        }
+
         if ($isConstructor = $reflectionMethod->isConstructor()) {
             $arguments = $definition->getArguments();
         } else {
@@ -191,10 +208,6 @@ class AutowirePass implements CompilerPassInterface
                     $arguments[$index] = $parameter->getDefaultValue();
 
                     continue;
-                }
-
-                if (null === $this->types) {
-                    $this->populateAvailableTypes();
                 }
 
                 if (isset($this->types[$typeHint->name])) {
@@ -245,6 +258,43 @@ class AutowirePass implements CompilerPassInterface
         } elseif ($addMethodCall) {
             $definition->addMethodCall($reflectionMethod->name, $arguments);
         }
+    }
+
+    /**
+     * Getter injection.
+     *
+     * @param string            $id
+     * @param Definition        $definition
+     * @param \ReflectionMethod $reflectionMethod
+     *
+     * @return bool
+     */
+    private function overrideGetter($id, Definition $definition, \ReflectionMethod $reflectionMethod)
+    {
+        if (!method_exists($reflectionMethod, 'getReturnType')) {
+            return false;
+        }
+
+        if (0 !== $reflectionMethod->getNumberOfParameters() || $reflectionMethod->isFinal() || $reflectionMethod->returnsReference() || !($returnType = $reflectionMethod->getReturnType())) {
+            return false;
+        }
+
+        $class = (string) $returnType;
+        if (isset($this->types[$class])) {
+            $value = new Reference($this->types[$class]);
+        } else {
+            try {
+                $value = $this->createAutowiredDefinition(new \ReflectionClass($class), $id);
+            } catch (\ReflectionException $e) {
+                return false;
+            } catch (RuntimeException $e) {
+                return false;
+            }
+        }
+
+        $definition->setOverriddenGetter($reflectionMethod->name, $value);
+
+        return true;
     }
 
     /**
