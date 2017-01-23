@@ -189,8 +189,8 @@ class Definition
     /**
      * Sets a specific argument.
      *
-     * @param int   $index
-     * @param mixed $argument
+     * @param int|string $index
+     * @param mixed      $argument
      *
      * @return $this
      *
@@ -198,8 +198,8 @@ class Definition
      */
     public function replaceArgument($index, $argument)
     {
-        if ($index < 0 || $index > count($this->arguments) - 1) {
-            throw new OutOfBoundsException(sprintf('The index "%d" is not in the range [0, %d].', $index, count($this->arguments) - 1));
+        if (!array_key_exists($index, $this->arguments)) {
+            throw new OutOfBoundsException(sprintf('The argument "%s" doesn\'t exist.', $index));
         }
 
         $this->arguments[$index] = $argument;
@@ -220,7 +220,7 @@ class Definition
     /**
      * Gets an argument to pass to the service constructor/factory method.
      *
-     * @param int $index
+     * @param int|string $index
      *
      * @return mixed The argument value
      *
@@ -228,8 +228,8 @@ class Definition
      */
     public function getArgument($index)
     {
-        if ($index < 0 || $index > count($this->arguments) - 1) {
-            throw new OutOfBoundsException(sprintf('The index "%d" is not in the range [0, %d].', $index, count($this->arguments) - 1));
+        if (!array_key_exists($index, $this->arguments)) {
+            throw new OutOfBoundsException(sprintf('The argument "%s" doesn\'t exist.', $index));
         }
 
         return $this->arguments[$index];

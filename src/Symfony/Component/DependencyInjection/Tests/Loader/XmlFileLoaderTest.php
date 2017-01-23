@@ -21,6 +21,7 @@ use Symfony\Component\DependencyInjection\Loader\IniFileLoader;
 use Symfony\Component\Config\Loader\LoaderResolver;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Tests\Fixtures\CaseSensitiveClass;
+use Symfony\Component\DependencyInjection\Tests\Fixtures\NamedArgumentsDummy;
 use Symfony\Component\ExpressionLanguage\Expression;
 
 class XmlFileLoaderTest extends \PHPUnit_Framework_TestCase
@@ -656,5 +657,18 @@ class XmlFileLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(array('setFoo'), $container->getDefinition('no_defaults')->getAutowiredMethods());
         $this->assertSame(array('setFoo'), $container->getDefinition('no_defaults_child')->getAutowiredMethods());
         $this->assertSame(array(), $container->getDefinition('with_defaults_child')->getAutowiredMethods());
+    }
+
+    public function testNamedArguments()
+    {
+        $container = new ContainerBuilder();
+        $loader = new XmlFileLoader($container, new FileLocator(self::$fixturesPath.'/xml'));
+        $loader->load('services33.xml');
+
+        $this->assertEquals(array('$apiKey' => 'ABCD'), $container->getDefinition(NamedArgumentsDummy::class)->getArguments());
+
+        $container->compile();
+
+        $this->assertEquals(array(1 => 'ABCD'), $container->getDefinition(NamedArgumentsDummy::class)->getArguments());
     }
 }

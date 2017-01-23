@@ -21,6 +21,7 @@ use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\Config\Loader\LoaderResolver;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Tests\Fixtures\CaseSensitiveClass;
+use Symfony\Component\DependencyInjection\Tests\Fixtures\NamedArgumentsDummy;
 use Symfony\Component\ExpressionLanguage\Expression;
 
 class YamlFileLoaderTest extends \PHPUnit_Framework_TestCase
@@ -402,6 +403,21 @@ class YamlFileLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($container->getDefinition('with_null')->isAutowired());
         $this->assertFalse($container->getDefinition('no_defaults')->isAutowired());
         $this->assertFalse($container->getDefinition('no_defaults_child')->isAutowired());
+    }
+
+    public function testNamedArguments()
+    {
+        $container = new ContainerBuilder();
+        $loader = new YamlFileLoader($container, new FileLocator(self::$fixturesPath.'/yaml'));
+        $loader->load('services33.yml');
+
+        $this->assertEquals(array('$apiKey' => 'ABCD'), $container->getDefinition(NamedArgumentsDummy::class)->getArguments());
+        $this->assertEquals(array('$apiKey' => 'ABCD'), $container->getDefinition('another_one')->getArguments());
+
+        $container->compile();
+
+        $this->assertEquals(array(1 => 'ABCD'), $container->getDefinition(NamedArgumentsDummy::class)->getArguments());
+        $this->assertEquals(array(1 => 'ABCD'), $container->getDefinition('another_one')->getArguments());
     }
 
     /**

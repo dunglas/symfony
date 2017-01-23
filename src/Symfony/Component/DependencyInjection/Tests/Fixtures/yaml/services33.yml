@@ -1,0 +1,7 @@
+services:
+    Symfony\Component\DependencyInjection\Tests\Fixtures\NamedArgumentsDummy: { $apiKey: ABCD }
+
+    another_one:
+        class: Symfony\Component\DependencyInjection\Tests\Fixtures\NamedArgumentsDummy
+        arguments:
+            $apiKey: ABCD
