@@ -5,3 +5,5 @@ services:
         class: Symfony\Component\DependencyInjection\Tests\Fixtures\NamedArgumentsDummy
         arguments:
             $apiKey: ABCD
+        calls:
+            - ['setApiKey', { $apiKey: '123' }]

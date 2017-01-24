@@ -3,6 +3,9 @@
     <services>
         <service id="Symfony\Component\DependencyInjection\Tests\Fixtures\NamedArgumentsDummy">
             <argument key="$apiKey">ABCD</argument>
+            <call method="setApiKey">
+                <argument key="$apiKey">123</argument>
+            </call>
         </service>
     </services>
 </container>

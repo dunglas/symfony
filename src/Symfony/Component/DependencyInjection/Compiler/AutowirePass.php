@@ -94,9 +94,10 @@ class AutowirePass extends AbstractRecursivePass implements CompilerPassInterfac
             $this->container->addResource(static::createResourceForClass($reflectionClass));
         }
 
+        $parameterBag = $this->container->getParameterBag();
         $methodsCalled = array();
         foreach ($value->getMethodCalls() as $methodCall) {
-            $methodsCalled[strtolower($methodCall[0])] = true;
+            $methodsCalled[strtolower($parameterBag->resolveValue($methodCall[0]))] = true;
         }
 
         foreach ($this->getMethodsToAutowire($reflectionClass, $autowiredMethods) as $reflectionMethod) {

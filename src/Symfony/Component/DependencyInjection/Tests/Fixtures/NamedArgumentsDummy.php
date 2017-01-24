@@ -10,4 +10,8 @@ class NamedArgumentsDummy
     public function __construct(CaseSensitiveClass $c, $apiKey)
     {
     }
+
+    public function setApiKey($apiKey)
+    {
+    }
 }

@@ -234,7 +234,7 @@ class YamlFileLoader extends FileLoader
     private function isUsingShortSyntax(array $service)
     {
         foreach ($service as $key => $value) {
-            if (!is_int($key) && ('' === $key || '$' !== $key[0])) {
+            if (is_string($key) && ('' === $key || '$' !== $key[0])) {
                 return false;
             }
         }

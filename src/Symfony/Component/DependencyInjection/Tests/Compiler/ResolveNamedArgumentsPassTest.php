@@ -27,11 +27,13 @@ class ResolveNamedArgumentsPassTest extends \PHPUnit_Framework_TestCase
 
         $definition = $container->register(NamedArgumentsDummy::class, NamedArgumentsDummy::class);
         $definition->setArguments(array(0 => new Reference('foo'), '$apiKey' => '123'));
+        $definition->addMethodCall('setApiKey', array('$apiKey' => '123'));
 
         $pass = new ResolveNamedArgumentsPass();
         $pass->process($container);
 
         $this->assertEquals(array(0 => new Reference('foo'), 1 => '123'), $definition->getArguments());
+        $this->assertEquals(array(array('setApiKey', array('123'))), $definition->getMethodCalls());
     }
 
     /**

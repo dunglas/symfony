@@ -22,7 +22,7 @@ use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
  */
 class ResolveNamedArgumentsPass extends AbstractRecursivePass implements CompilerPassInterface
 {
-    private $constructors = array();
+    private $classReflectors = array();
 
     /**
      * {@inheritdoc}
@@ -40,7 +40,7 @@ class ResolveNamedArgumentsPass extends AbstractRecursivePass implements Compile
             spl_autoload_unregister($throwingAutoloader);
 
             // Free memory
-            $this->constructors = array();
+            $this->classReflectors = array();
         }
     }
 
@@ -53,30 +53,52 @@ class ResolveNamedArgumentsPass extends AbstractRecursivePass implements Compile
             return parent::processValue($value, $isRoot);
         }
 
-        $class = $value->getClass();
-        $originalArguments = $arguments = $value->getArguments();
+        $parameterBag = $this->container->getParameterBag();
 
-        foreach ($arguments as $key => $argument) {
-            if (!is_string($key)) {
-                continue;
-            }
-
-            $constructor = $this->getConstructor($class, $key);
-            foreach ($constructor->getParameters() as $index => $parameter) {
-                if ($key === '$'.$parameter->getName()) {
-                    unset($arguments[$key]);
-                    $arguments[$index] = $argument;
-
-                    continue 2;
-                }
-            }
-
-            throw new InvalidArgumentException(sprintf('Unable to resolve the argument "%s" of the service "%s": the constructor of the class "%s" has no argument of this name.', $key, $this->currentId, $class));
+        if ($class = $value->getClass()) {
+            $class = $parameterBag->resolveValue($class);
         }
 
-        if ($originalArguments !== $arguments) {
-            ksort($arguments);
+        $calls = $value->getMethodCalls();
+        $calls[] = array('__construct', $value->getArguments());
+
+        foreach ($calls as $i => $call) {
+            list($method, $arguments) = $call;
+            $method = $parameterBag->resolveValue($method);
+            $parameters = null;
+
+            foreach ($arguments as $key => $argument) {
+                if (is_int($key) || '' === $key || '$' !== $key[0]) {
+                    continue;
+                }
+
+                $parameters = null !== $parameters ? $parameters : $this->getParameters($class, $method);
+
+                foreach ($parameters as $j => $p) {
+                    if ($key === '$'.$p->name) {
+                        unset($arguments[$key]);
+                        $arguments[$j] = $argument;
+
+                        continue 2;
+                    }
+                }
+
+                throw new InvalidArgumentException(sprintf('Unable to resolve service "%s": method "%s::%s" has no "%s" argument.', $this->currentId, $class, $method, $key));
+            }
+
+            if ($arguments !== $call[1]) {
+                ksort($arguments);
+                $calls[$i][1] = $arguments;
+            }
+        }
+
+        list(, $arguments) = array_pop($calls);
+
+        if ($arguments !== $value->getArguments()) {
             $value->setArguments($arguments);
+        }
+        if ($calls !== $value->getMethodCalls()) {
+            $value->setMethodCalls($calls);
         }
 
         return parent::processValue($value, $isRoot);
@@ -84,36 +106,41 @@ class ResolveNamedArgumentsPass extends AbstractRecursivePass implements Compile
 
     /**
      * @param string|null $class
-     * @param string      $key
+     * @param string      $method
      *
      * @throws InvalidArgumentException
      *
-     * @return \ReflectionMethod
+     * @return array
      */
-    private function getConstructor($class, $key)
+    private function getParameters($class, $method)
     {
-        if (isset($this->constructors[$class])) {
-            return $this->constructors[$class];
+        if (!$class) {
+            throw new InvalidArgumentException(sprintf('Unable to resolve service "%s": the class is not set.', $this->currentId));
         }
 
         try {
-            $reflectionClass = new \ReflectionClass($class);
-        } catch (\ReflectionException $e) {
-            if (null === $class) {
-                throw new InvalidArgumentException(sprintf('Unable to resolve the argument "%s" of the service "%s": the class is not set.', $key, $this->currentId));
+            if (isset($this->classReflectors[$class])) {
+                $class = $this->classReflectors[$class];
+            } else {
+                $class = $this->classReflectors[$class] = new \ReflectionClass($class);
+
+                if ($this->container->isTrackingResources()) {
+                    $this->container->addResource(AutowirePass::createResourceForClass($class));
+                }
             }
-
-            throw new InvalidArgumentException(sprintf('Unable to resolve the argument "%s" of the service "%s": the class "%s" does not exist.', $key, $this->currentId, $class));
+        } catch (\ReflectionException $e) {
+            throw new InvalidArgumentException(sprintf('Unable to resolve service "%s": class "%s" does not exist.', $this->currentId, $class));
         }
 
-        if (!$constructor = $reflectionClass->getConstructor()) {
-            throw new InvalidArgumentException(sprintf('Unable to resolve the argument "%s" of the service "%s": the class "%s" has no constructor.', $key, $this->currentId, $class));
+        if (!$class->hasMethod($method)) {
+            throw new InvalidArgumentException(sprintf('Unable to resolve service "%s": method "%s::%s" does not exist.', $this->currentId, $class, $method));
         }
 
-        if ($this->container->isTrackingResources()) {
-            $this->container->addResource(AutowirePass::createResourceForClass($reflectionClass));
+        $method = $class->getMethod($method);
+        if (!$method->isPublic()) {
+            throw new InvalidArgumentException(sprintf('Unable to resolve service "%s": method "%s::%s" must be public.', $this->currentId, $class, $method->name));
         }
 
-        return $this->constructors[$class] = $constructor;
+        return $method->getParameters();
     }
 }

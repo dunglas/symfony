@@ -409,7 +409,7 @@ class YamlFileLoaderTest extends \PHPUnit_Framework_TestCase
     {
         $container = new ContainerBuilder();
         $loader = new YamlFileLoader($container, new FileLocator(self::$fixturesPath.'/yaml'));
-        $loader->load('services33.yml');
+        $loader->load('services_named_args.yml');
 
         $this->assertEquals(array('$apiKey' => 'ABCD'), $container->getDefinition(NamedArgumentsDummy::class)->getArguments());
         $this->assertEquals(array('$apiKey' => 'ABCD'), $container->getDefinition('another_one')->getArguments());
@@ -418,6 +418,7 @@ class YamlFileLoaderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(array(1 => 'ABCD'), $container->getDefinition(NamedArgumentsDummy::class)->getArguments());
         $this->assertEquals(array(1 => 'ABCD'), $container->getDefinition('another_one')->getArguments());
+        $this->assertEquals(array(array('setApiKey', array('123'))), $container->getDefinition('another_one')->getMethodCalls());
     }
 
     /**
