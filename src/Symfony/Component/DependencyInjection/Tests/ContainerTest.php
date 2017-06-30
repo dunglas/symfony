@@ -384,6 +384,22 @@ class ContainerTest extends TestCase
         $this->assertNull($c->get('bar', ContainerInterface::NULL_ON_INVALID_REFERENCE));
     }
 
+    public function testGetSecret()
+    {
+        $c = new Container();
+        $c->setParameter('secret(a/path)', 'hello');
+        $m = new \ReflectionMethod($c, 'getSecret');
+        $m->setAccessible(true);
+
+        $fixture = __DIR__.'/Fixtures/secret';
+        $this->assertSame('s3cR3t', $m->invoke($c, $fixture));
+        $this->assertSame('s3cR3t', $m->invoke($c, $fixture)); // Retrieving from cache
+
+        $c = new Container();
+        $c->setParameter('kernel.project_dir', __DIR__.'/Fixtures');
+        $this->assertSame('s3cR3t', $m->invoke($c, 'secret'));
+    }
+
     /**
      * @expectedException \Exception
      * @expectedExceptionMessage Something went terribly wrong!
