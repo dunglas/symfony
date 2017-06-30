@@ -13,6 +13,7 @@ namespace Symfony\Component\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\Exception\EnvNotFoundException;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
+use Symfony\Component\DependencyInjection\Exception\SecretNotFoundException;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -52,6 +53,7 @@ class Container implements ResettableContainerInterface
     protected $loading = array();
 
     private $envCache = array();
+    private $secretCache = array();
     private $compiled = false;
 
     /**
@@ -372,6 +374,68 @@ class Container implements ResettableContainerInterface
         }
 
         return $this->envCache[$name] = $this->getParameter("env($name)");
+    }
+
+    /**
+     * Fetches a value from a secret file.
+     *
+     * @param string The secret file's path
+     *
+     * @return scalar The value to use for the provided secret file path
+     *
+     * @throws SecretNotFoundException When the secret file is not found and has no default value
+     */
+    protected function getSecret($path)
+    {
+        if (isset($this->secretCache[$path]) || array_key_exists($path, $this->secretCache)) {
+            return $this->secretCache[$path];
+        }
+
+        if (0 === strpos($path, 'env(') && ')' === substr($path, -1)) {
+            // environment variable
+            $realpath = $this->getEnv(substr($path,4, -1));
+        } elseif (0 === strpos($path, '/') || false !== strpos($path, ':\\') || !$this->hasParameter('kernel.project_dir')) {
+            // absolute path, or kernel.project_dir not defined
+            $realpath = $path;
+        } else {
+            // relative path and kernel.project_dir defined
+            $realpath = $this->getParameter('kernel.project_dir').'/'.$path;
+        }
+
+        if (file_exists($realpath) && $secret = file_get_contents($realpath)) {
+            return $this->secretCache[$path] = $secret;
+        }
+        if (!$this->hasParameter("secret($path)")) {
+            throw new SecretNotFoundException($path);
+        }
+
+        return $this->secretCache[$path] = $this->getParameter("secret($path)");
+    }
+
+    /**
+     * Returns the case sensitive id used at registration time.
+     *
+     * @param string $id
+     *
+     * @return string
+     *
+     * @internal
+     */
+    public function normalizeId($id)
+    {
+        if (!is_string($id)) {
+            $id = (string) $id;
+        }
+        if (isset($this->normalizedIds[$normalizedId = strtolower($id)])) {
+            $normalizedId = $this->normalizedIds[$normalizedId];
+            if ($id !== $normalizedId) {
+                @trigger_error(sprintf('Service identifiers will be made case sensitive in Symfony 4.0. Using "%s" instead of "%s" is deprecated since version 3.3.', $id, $normalizedId), E_USER_DEPRECATED);
+            }
+        } else {
+            $normalizedId = $this->normalizedIds[$normalizedId] = $id;
+        }
+
+        return $normalizedId;
     }
 
     private function __clone()
