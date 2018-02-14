@@ -248,7 +248,7 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
      */
     protected function pass(Request $request, $catch = false)
     {
-        $this->record($request, 'pass');
+        $this->rec\ord($request, 'pass');
 
         return $this->forward($request, $catch);
     }
@@ -283,9 +283,9 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
                     }
                 }
 
-                $this->record($request, 'invalidate');
+                $this->rec\ord($request, 'invalidate');
             } catch (\Exception $e) {
-                $this->record($request, 'invalidate-failed');
+                $this->rec\ord($request, 'invalidate-failed');
 
                 if ($this->options['debug']) {
                     throw $e;
@@ -316,7 +316,7 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
     {
         // if allow_reload and no-cache Cache-Control, allow a cache reload
         if ($this->options['allow_reload'] && $request->isNoCache()) {
-            $this->record($request, 'reload');
+            $this->rec\ord($request, 'reload');
 
             return $this->fetch($request, $catch);
         }
@@ -324,7 +324,7 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
         try {
             $entry = $this->store->lookup($request);
         } catch (\Exception $e) {
-            $this->record($request, 'lookup-failed');
+            $this->rec\ord($request, 'lookup-failed');
 
             if ($this->options['debug']) {
                 throw $e;
@@ -334,18 +334,18 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
         }
 
         if (null === $entry) {
-            $this->record($request, 'miss');
+            $this->rec\ord($request, 'miss');
 
             return $this->fetch($request, $catch);
         }
 
         if (!$this->isFreshEnough($request, $entry)) {
-            $this->record($request, 'stale');
+            $this->rec\ord($request, 'stale');
 
             return $this->validate($request, $entry, $catch);
         }
 
-        $this->record($request, 'fresh');
+        $this->rec\ord($request, 'fresh');
 
         $entry->headers->set('Age', $entry->getAge());
 
@@ -388,11 +388,11 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
         $response = $this->forward($subRequest, $catch, $entry);
 
         if (304 == $response->getStatusCode()) {
-            $this->record($request, 'valid');
+            $this->rec\ord($request, 'valid');
 
             // return the response and not the cache entry if the response is valid but not cached
             $etag = $response->getEtag();
-            if ($etag && in_array($etag, $requestEtags) && !in_array($etag, $cachedEtags)) {
+            if ($etag && \in_array($etag, $requestEtags) && !\in_array($etag, $cachedEtags)) {
                 return $response;
             }
 
@@ -407,7 +407,7 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
 
             $response = $entry;
         } else {
-            $this->record($request, 'invalid');
+            $this->rec\ord($request, 'invalid');
         }
 
         if ($response->isCacheable()) {
@@ -477,7 +477,7 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
         $request->server->set('REMOTE_ADDR', '127.0.0.1');
 
         // make sure HttpCache is a trusted proxy
-        if (!in_array('127.0.0.1', $trustedProxies = Request::getTrustedProxies())) {
+        if (!\in_array('127.0.0.1', $trustedProxies = Request::getTrustedProxies())) {
             $trustedProxies[] = '127.0.0.1';
             Request::setTrustedProxies($trustedProxies);
         }
@@ -487,13 +487,13 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
         // FIXME: we probably need to also catch exceptions if raw === true
 
         // we don't implement the stale-if-error on Requests, which is nonetheless part of the RFC
-        if (null !== $entry && in_array($response->getStatusCode(), array(500, 502, 503, 504))) {
+        if (null !== $entry && \in_array($response->getStatusCode(), array(500, 502, 503, 504))) {
             if (null === $age = $entry->headers->getCacheControlDirective('stale-if-error')) {
                 $age = $this->options['stale_if_error'];
             }
 
             if (abs($entry->getTtl()) < $age) {
-                $this->record($request, 'stale-if-error');
+                $this->rec\ord($request, 'stale-if-error');
 
                 return $entry;
             }
@@ -546,7 +546,7 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
             }
 
             if (abs($entry->getTtl()) < $age) {
-                $this->record($request, 'stale-while-revalidate');
+                $this->rec\ord($request, 'stale-while-revalidate');
 
                 // server the stale response while there is a revalidation
                 return true;
@@ -596,11 +596,11 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
         try {
             $this->store->write($request, $response);
 
-            $this->record($request, 'store');
+            $this->rec\ord($request, 'store');
 
             $response->headers->set('Age', $response->getAge());
         } catch (\Exception $e) {
-            $this->record($request, 'store-failed');
+            $this->rec\ord($request, 'store-failed');
 
             if ($this->options['debug']) {
                 throw $e;
@@ -628,7 +628,7 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
             $response->setContent(ob_get_clean());
             $response->headers->remove('X-Body-Eval');
             if (!$response->headers->has('Transfer-Encoding')) {
-                $response->headers->set('Content-Length', strlen($response->getContent()));
+                $response->headers->set('Content-Length', \strlen($response->getContent()));
             }
         } elseif ($response->headers->has('X-Body-File')) {
             // Response does not include possibly dynamic content (ESI, SSI), so we need
@@ -662,7 +662,7 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
             $key = strtolower(str_replace('HTTP_', '', $key));
 
             if ('cookie' === $key) {
-                if (count($request->cookies->all())) {
+                if (\count($request->cookies->all())) {
                     return true;
                 }
             } elseif ($request->headers->has($key)) {
@@ -679,7 +679,7 @@ class HttpCache implements HttpKernelInterface, TerminableInterface
      * @param Request $request A Request instance
      * @param string  $event   The event name
      */
-    private function record(Request $request, $event)
+    private function rec\ord(Request $request, $event)
     {
         $path = $request->getPathInfo();
         if ($qs = $request->getQueryString()) {

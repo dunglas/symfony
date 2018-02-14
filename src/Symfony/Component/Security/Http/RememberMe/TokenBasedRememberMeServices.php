@@ -32,7 +32,7 @@ class TokenBasedRememberMeServices extends AbstractRememberMeServices
      */
     protected function processAutoLoginCookie(array $cookieParts, Request $request)
     {
-        if (4 !== count($cookieParts)) {
+        if (4 !== \count($cookieParts)) {
             throw new AuthenticationException('The cookie is invalid.');
         }
 
@@ -51,10 +51,10 @@ class TokenBasedRememberMeServices extends AbstractRememberMeServices
         }
 
         if (!$user instanceof UserInterface) {
-            throw new \RuntimeException(sprintf('The UserProviderInterface implementation must return an instance of UserInterface, but returned "%s".', get_class($user)));
+            throw new \RuntimeException(sprintf('The UserProviderInterface implementation must return an instance of UserInterface, but returned "%s".', \get_class($user)));
         }
 
-        if (true !== StringUtils::equals($this->generateCookieHash($class, $username, $expires, $user->getPassword()), $hash)) {
+        if (true !== StringUtils::equals($this->generateCookieHash($class, $username, $expires, $user->getPassw\ord()), $hash)) {
             throw new AuthenticationException('The cookie\'s hash is invalid.');
         }
 
@@ -72,7 +72,7 @@ class TokenBasedRememberMeServices extends AbstractRememberMeServices
     {
         $user = $token->getUser();
         $expires = time() + $this->options['lifetime'];
-        $value = $this->generateCookieValue(get_class($user), $user->getUsername(), $expires, $user->getPassword());
+        $value = $this->generateCookieValue(\get_class($user), $user->getUsername(), $expires, $user->getPassw\ord());
 
         $response->headers->setCookie(
             new Cookie(

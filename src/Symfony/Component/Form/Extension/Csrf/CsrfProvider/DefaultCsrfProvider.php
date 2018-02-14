@@ -60,7 +60,7 @@ class DefaultCsrfProvider implements CsrfProviderInterface
     {
         $expectedToken = $this->generateCsrfToken($intention);
 
-        if (function_exists('hash_equals')) {
+        if (\function_exists('hash_equals')) {
             return hash_equals($expectedToken, $token);
         }
 

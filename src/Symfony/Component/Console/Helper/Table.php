@@ -129,7 +129,7 @@ class Table
     public function setHeaders(array $headers)
     {
         $headers = array_values($headers);
-        if (!empty($headers) && !is_array($headers[0])) {
+        if (!empty($headers) && !\is_array($headers[0])) {
             $headers = array($headers);
         }
 
@@ -162,7 +162,7 @@ class Table
             return $this;
         }
 
-        if (!is_array($row)) {
+        if (!\is_array($row)) {
             throw new \InvalidArgumentException('A row must be an array or a TableSeparator instance.');
         }
 
@@ -291,15 +291,15 @@ class Table
         }
 
         // str_pad won't work properly with multi-byte strings, we need to fix the padding
-        if (function_exists('mb_strwidth') && false !== $encoding = mb_detect_encoding($cell)) {
-            $width += strlen($cell) - mb_strwidth($cell, $encoding);
+        if (\function_exists('mb_strwidth') && false !== $encoding = mb_detect_encoding($cell)) {
+            $width += \strlen($cell) - mb_strwidth($cell, $encoding);
         }
 
         if ($cell instanceof TableSeparator) {
             return sprintf($this->style->getBorderFormat(), str_repeat($this->style->getHorizontalBorderChar(), $width));
         }
 
-        $width += Helper::strlen($cell) - Helper::strlenWithoutDecoration($this->output->getFormatter(), $cell);
+        $width += Helper::\strlen($cell) - Helper::strlenWithoutDecoration($this->output->getFormatter(), $cell);
         $content = sprintf($this->style->getCellRowContentFormat(), $cell);
 
         return sprintf($cellFormat, str_pad($content, $width, $this->style->getPaddingChar(), $this->style->getPadType()));
@@ -329,7 +329,7 @@ class Table
     private function buildTableRows($rows)
     {
         $unmergedRows = array();
-        for ($rowKey = 0; $rowKey < count($rows); ++$rowKey) {
+        for ($rowKey = 0; $rowKey < \count($rows); ++$rowKey) {
             $rows = $this->fillNextRows($rows, $rowKey);
 
             // Remove any new line breaks and replace it with a new line
@@ -379,7 +379,7 @@ class Table
                 $lines = array($cell);
                 if (strstr($cell, "\n")) {
                     $lines = explode("\n", str_replace("\n", "<fg=default;bg=default>\n</>", $cell));
-                    $nbLines = count($lines) > $nbLines ? substr_count($cell, "\n") : $nbLines;
+                    $nbLines = \count($lines) > $nbLines ? substr_\count($cell, "\n") : $nbLines;
 
                     $rows[$line][$column] = new TableCell($lines[0], array('colspan' => $cell->getColspan()));
                     unset($lines[0]);
@@ -399,7 +399,7 @@ class Table
 
         foreach ($unmergedRows as $unmergedRowKey => $unmergedRow) {
             // we need to know if $unmergedRow will be merged or inserted into $rows
-            if (isset($rows[$unmergedRowKey]) && is_array($rows[$unmergedRowKey]) && ($this->getNumberOfColumns($rows[$unmergedRowKey]) + $this->getNumberOfColumns($unmergedRows[$unmergedRowKey]) <= $this->numberOfColumns)) {
+            if (isset($rows[$unmergedRowKey]) && \is_array($rows[$unmergedRowKey]) && ($this->getNumberOfColumns($rows[$unmergedRowKey]) + $this->getNumberOfColumns($unmergedRows[$unmergedRowKey]) <= $this->numberOfColumns)) {
                 foreach ($unmergedRow as $cellKey => $cell) {
                     // insert cell into row at cellKey position
                     array_splice($rows[$unmergedRowKey], $cellKey, 0, array($cell));
@@ -465,7 +465,7 @@ class Table
      */
     private function getNumberOfColumns(array $row)
     {
-        $columns = count($row);
+        $columns = \count($row);
         foreach ($row as $column) {
             $columns += $column instanceof TableCell ? ($column->getColspan() - 1) : 0;
         }
@@ -514,7 +514,7 @@ class Table
             foreach ($row as $i => $cell) {
                 if ($cell instanceof TableCell) {
                     $textContent = Helper::removeDecoration($this->output->getFormatter(), $cell);
-                    $textLength = Helper::strlen($textContent);
+                    $textLength = Helper::\strlen($textContent);
                     if ($textLength > 0) {
                         $contentColumns = str_split($textContent, ceil($textLength / $cell->getColspan()));
                         foreach ($contentColumns as $position => $content) {
@@ -527,7 +527,7 @@ class Table
             $lengths[] = $this->getCellWidth($row, $column);
         }
 
-        return $this->columnWidths[$column] = max($lengths) + strlen($this->style->getCellRowContentFormat()) - 2;
+        return $this->columnWidths[$column] = max($lengths) + \strlen($this->style->getCellRowContentFormat()) - 2;
     }
 
     /**
@@ -537,7 +537,7 @@ class Table
      */
     private function getColumnSeparatorWidth()
     {
-        return strlen(sprintf($this->style->getBorderFormat(), $this->style->getVerticalBorderChar()));
+        return \strlen(sprintf($this->style->getBorderFormat(), $this->style->getVerticalBorderChar()));
     }
 
     /**

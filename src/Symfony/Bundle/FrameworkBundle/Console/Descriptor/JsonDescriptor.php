@@ -88,7 +88,7 @@ class JsonDescriptor extends Descriptor
         } elseif ($service instanceof Definition) {
             $this->writeData($this->getContainerDefinitionData($service), $options);
         } else {
-            $this->writeData(get_class($service), $options);
+            $this->writeData(\get_class($service), $options);
         }
     }
 
@@ -111,7 +111,7 @@ class JsonDescriptor extends Descriptor
                     $data['definitions'][$serviceId] = $this->getContainerDefinitionData($service);
                 }
             } else {
-                $data['services'][$serviceId] = get_class($service);
+                $data['services'][$serviceId] = \get_class($service);
             }
         }
 
@@ -169,7 +169,7 @@ class JsonDescriptor extends Descriptor
     {
         $flags = isset($options['json_encoding']) ? $options['json_encoding'] : 0;
 
-        if (defined('JSON_PRETTY_PRINT')) {
+        if (\defined('JSON_PRETTY_PRINT')) {
             $flags |= JSON_PRETTY_PRINT;
         }
 
@@ -191,7 +191,7 @@ class JsonDescriptor extends Descriptor
             'hostRegex' => '' !== $route->getHost() ? $route->compile()->getHostRegex() : '',
             'scheme' => $route->getSchemes() ? implode('|', $route->getSchemes()) : 'ANY',
             'method' => $route->getMethods() ? implode('|', $route->getMethods()) : 'ANY',
-            'class' => get_class($route),
+            'class' => \get_class($route),
             'defaults' => $route->getDefaults(),
             'requirements' => $requirements ?: 'NO CUSTOM',
             'options' => $route->getOptions(),
@@ -234,7 +234,7 @@ class JsonDescriptor extends Descriptor
         }
 
         if ($factory = $definition->getFactory()) {
-            if (is_array($factory)) {
+            if (\is_array($factory)) {
                 if ($factory[0] instanceof Reference) {
                     $data['factory_service'] = (string) $factory[0];
                 } elseif ($factory[0] instanceof Definition) {
@@ -250,7 +250,7 @@ class JsonDescriptor extends Descriptor
 
         if (!$omitTags) {
             $data['tags'] = array();
-            if (count($definition->getTags())) {
+            if (\count($definition->getTags())) {
                 foreach ($definition->getTags() as $tagName => $tagData) {
                     foreach ($tagData as $parameters) {
                         $data['tags'][] = array('name' => $tagName, 'parameters' => $parameters);
@@ -311,12 +311,12 @@ class JsonDescriptor extends Descriptor
     {
         $data = array();
 
-        if (is_array($callable)) {
+        if (\is_array($callable)) {
             $data['type'] = 'function';
 
-            if (is_object($callable[0])) {
+            if (\is_object($callable[0])) {
                 $data['name'] = $callable[1];
-                $data['class'] = get_class($callable[0]);
+                $data['class'] = \get_class($callable[0]);
             } else {
                 if (0 !== strpos($callable[1], 'parent::')) {
                     $data['name'] = $callable[1];
@@ -333,7 +333,7 @@ class JsonDescriptor extends Descriptor
             return $data;
         }
 
-        if (is_string($callable)) {
+        if (\is_string($callable)) {
             $data['type'] = 'function';
 
             if (false === strpos($callable, '::')) {
@@ -357,7 +357,7 @@ class JsonDescriptor extends Descriptor
 
         if (method_exists($callable, '__invoke')) {
             $data['type'] = 'object';
-            $data['name'] = get_class($callable);
+            $data['name'] = \get_class($callable);
 
             return $data;
         }

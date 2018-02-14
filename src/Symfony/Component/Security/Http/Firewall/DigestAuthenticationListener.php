@@ -91,7 +91,7 @@ class DigestAuthenticationListener implements ListenerInterface
                 throw new AuthenticationServiceException('Digest User provider returned null, which is an interface contract violation');
             }
 
-            $serverDigestMd5 = $digestAuth->calculateServerDigest($user->getPassword(), $request->getMethod());
+            $serverDigestMd5 = $digestAuth->calculateServerDigest($user->getPassw\ord(), $request->getMethod());
         } catch (UsernameNotFoundException $e) {
             $this->fail($event, $request, new BadCredentialsException(sprintf('Username %s not found.', $digestAuth->getUsername())));
 
@@ -118,7 +118,7 @@ class DigestAuthenticationListener implements ListenerInterface
             $this->logger->info('Digest authentication successful.', array('username' => $digestAuth->getUsername(), 'received' => $digestAuth->getResponse()));
         }
 
-        $this->tokenStorage->setToken(new UsernamePasswordToken($user, $user->getPassword(), $this->providerKey));
+        $this->tokenStorage->setToken(new UsernamePasswordToken($user, $user->getPassw\ord(), $this->providerKey));
     }
 
     private function fail(GetResponseEvent $event, Request $request, AuthenticationException $authException)
@@ -183,7 +183,7 @@ class DigestData
 
         $nonceTokens = explode(':', $nonceAsPlainText);
 
-        if (2 !== count($nonceTokens)) {
+        if (2 !== \count($nonceTokens)) {
             throw new BadCredentialsException(sprintf('Nonce should have yielded two tokens but was "%s".', $nonceAsPlainText));
         }
 

@@ -61,20 +61,20 @@ class SymfonyStyle extends OutputStyle
     public function block($messages, $type = null, $style = null, $prefix = ' ', $padding = false)
     {
         $this->autoPrependBlock();
-        $messages = is_array($messages) ? array_values($messages) : array($messages);
+        $messages = \is_array($messages) ? array_values($messages) : array($messages);
         $indentLength = 0;
         $lines = array();
 
         if (null !== $type) {
             $typePrefix = sprintf('[%s] ', $type);
-            $indentLength = strlen($typePrefix);
+            $indentLength = \strlen($typePrefix);
             $lineIndentation = str_repeat(' ', $indentLength);
         }
 
         // wrap and add newlines for each element
         foreach ($messages as $key => $message) {
             $message = OutputFormatter::escape($message);
-            $lines = array_merge($lines, explode(PHP_EOL, wordwrap($message, $this->lineLength - Helper::strlen($prefix) - $indentLength, PHP_EOL, true)));
+            $lines = array_merge($lines, explode(PHP_EOL, wordwrap($message, $this->lineLength - Helper::\strlen($prefix) - $indentLength, PHP_EOL, true)));
 
             // prefix each line with a number of spaces equivalent to the type length
             if (null !== $type) {
@@ -83,7 +83,7 @@ class SymfonyStyle extends OutputStyle
                 }
             }
 
-            if (count($messages) > 1 && $key < count($messages) - 1) {
+            if (\count($messages) > 1 && $key < \count($messages) - 1) {
                 $lines[] = '';
             }
         }
@@ -118,7 +118,7 @@ class SymfonyStyle extends OutputStyle
         $this->autoPrependBlock();
         $this->writeln(array(
             sprintf('<comment>%s</>', OutputFormatter::escapeTrailingBackslash($message)),
-            sprintf('<comment>%s</>', str_repeat('=', strlen($message))),
+            sprintf('<comment>%s</>', str_repeat('=', \strlen($message))),
         ));
         $this->newLine();
     }
@@ -131,7 +131,7 @@ class SymfonyStyle extends OutputStyle
         $this->autoPrependBlock();
         $this->writeln(array(
             sprintf('<comment>%s</>', OutputFormatter::escapeTrailingBackslash($message)),
-            sprintf('<comment>%s</>', str_repeat('-', strlen($message))),
+            sprintf('<comment>%s</>', str_repeat('-', \strlen($message))),
         ));
         $this->newLine();
     }
@@ -157,7 +157,7 @@ class SymfonyStyle extends OutputStyle
     {
         $this->autoPrependText();
 
-        if (!is_array($message)) {
+        if (!\is_array($message)) {
             $this->writeln(sprintf(' // %s', $message));
 
             return;
@@ -391,7 +391,7 @@ class SymfonyStyle extends OutputStyle
             return $this->newLine(); //empty history, so we should start with a new line.
         }
         //Prepend new line for each non LF chars (This means no blank line was output before)
-        $this->newLine(2 - substr_count($chars, "\n"));
+        $this->newLine(2 - substr_\count($chars, "\n"));
     }
 
     private function autoPrependText()

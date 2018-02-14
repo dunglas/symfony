@@ -317,7 +317,7 @@ class SecurityExtension extends Extension
             }
 
             // add cookie logout handler
-            if (count($firewall['logout']['delete_cookies']) > 0) {
+            if (\count($firewall['logout']['delete_cookies']) > 0) {
                 $cookieHandlerId = 'security.logout.handler.cookie_clearing.'.$id;
                 $cookieHandler = $container->setDefinition($cookieHandlerId, new DefinitionDecorator('security.logout.handler.cookie_clearing'));
                 $cookieHandler->addArgument($firewall['logout']['delete_cookies']);
@@ -371,7 +371,7 @@ class SecurityExtension extends Extension
             return $this->contextListeners[$contextKey];
         }
 
-        $listenerId = 'security.context_listener.'.count($this->contextListeners);
+        $listenerId = 'security.context_listener.'.\count($this->contextListeners);
         $listener = $container->setDefinition($listenerId, new DefinitionDecorator('security.context_listener'));
         $listener->replaceArgument(2, $contextKey);
 
@@ -608,7 +608,7 @@ class SecurityExtension extends Extension
 
         // only add arguments that are necessary
         $arguments = array($path, $host, $methods, $ip, $attributes);
-        while (count($arguments) > 0 && !end($arguments)) {
+        while (\count($arguments) > 0 && !end($arguments)) {
             array_pop($arguments);
         }
 

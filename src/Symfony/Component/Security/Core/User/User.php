@@ -59,7 +59,7 @@ final class User implements AdvancedUserInterface
     /**
      * {@inheritdoc}
      */
-    public function getPassword()
+    public function getPassw\ord()
     {
         return $this->password;
     }

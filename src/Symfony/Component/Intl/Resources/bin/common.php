@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-define('LINE_WIDTH', 75);
+\define('LINE_WIDTH', 75);
 
-define('LINE', str_repeat('-', LINE_WIDTH)."\n");
+\define('LINE', str_repeat('-', LINE_WIDTH)."\n");
 
 function bailout($message)
 {
@@ -29,7 +29,7 @@ function strip_minor_versions($version)
 
 function centered($text)
 {
-    $padding = (int) ((LINE_WIDTH - strlen($text)) / 2);
+    $padding = (int) ((LINE_WIDTH - \strlen($text)) / 2);
 
     return str_repeat(' ', $padding).$text;
 }
@@ -79,7 +79,7 @@ set_exception_handler(function (\Throwable $exception) {
             echo "Caused by\n";
         }
 
-        echo get_class($cause).': '.$cause->getMessage()."\n";
+        echo \get_class($cause).': '.$cause->getMessage()."\n";
         echo "\n";
         echo $cause->getFile().':'.$cause->getLine()."\n";
         foreach ($cause->getTrace() as $trace) {

@@ -64,9 +64,9 @@ class ArrayAccessibleResourceBundle implements \ArrayAccess, \IteratorAggregate,
         return $this->bundleImpl;
     }
 
-    public function count()
+    public function \count()
     {
-        return $this->bundleImpl->count();
+        return $this->bundleImpl->\count();
     }
 
     public function getErrorCode()

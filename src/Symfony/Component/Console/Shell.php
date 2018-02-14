@@ -39,7 +39,7 @@ class Shell
      */
     public function __construct(Application $application)
     {
-        $this->hasReadline = function_exists('readline');
+        $this->hasReadline = \function_exists('readline');
         $this->application = $application;
         $this->history = getenv('HOME').'/.history_'.$application->getName();
         $this->output = new ConsoleOutput();

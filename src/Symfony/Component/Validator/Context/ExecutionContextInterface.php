@@ -90,7 +90,7 @@ interface ExecutionContextInterface extends LegacyExecutionContextInterface
      *
      *         $violations = $validator->validateValue($value, new Length(array('min' => 3)));
      *
-     *         if (count($violations) > 0) {
+     *         if (\count($violations) > 0) {
      *             // ...
      *         }
      *     }

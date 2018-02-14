@@ -61,9 +61,9 @@ class RouteCollection implements \IteratorAggregate, \Countable
      *
      * @return int The number of routes
      */
-    public function count()
+    public function \count()
     {
-        return count($this->routes);
+        return \count($this->routes);
     }
 
     /**

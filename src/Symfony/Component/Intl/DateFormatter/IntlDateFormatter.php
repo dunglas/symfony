@@ -186,7 +186,7 @@ class IntlDateFormatter
     public function format($timestamp)
     {
         // intl allows timestamps to be passed as arrays - we don't
-        if (is_array($timestamp)) {
+        if (\is_array($timestamp)) {
             $message = 'Only integer Unix timestamps and DateTime objects are supported';
 
             throw new MethodArgumentValueNotImplementedException(__METHOD__, 'timestamp', $timestamp, $message);
@@ -194,9 +194,9 @@ class IntlDateFormatter
 
         // behave like the intl extension
         $argumentError = null;
-        if (!is_int($timestamp) && !$timestamp instanceof \DateTime) {
+        if (!\is_int($timestamp) && !$timestamp instanceof \DateTime) {
             $argumentError = 'datefmt_format: takes either an array or an integer timestamp value or a DateTime object';
-            if (\PHP_VERSION_ID >= 50500 || (extension_loaded('intl') && method_exists('IntlDateFormatter', 'setTimeZone'))) {
+            if (\PHP_VERSION_ID >= 50500 || (\extension_loaded('intl') && method_exists('IntlDateFormatter', 'setTimeZone'))) {
                 $argumentError = sprintf('datefmt_format: string \'%s\' is not numeric, which would be required for it to be a valid date', $timestamp);
             }
         }
@@ -358,7 +358,7 @@ class IntlDateFormatter
         }
 
         // In PHP 5.5 default timezone depends on `date_default_timezone_get()` method
-        if (\PHP_VERSION_ID >= 50500 || (extension_loaded('intl') && method_exists('IntlDateFormatter', 'setTimeZone'))) {
+        if (\PHP_VERSION_ID >= 50500 || (\extension_loaded('intl') && method_exists('IntlDateFormatter', 'setTimeZone'))) {
             return date_default_timezone_get();
         }
     }
@@ -398,7 +398,7 @@ class IntlDateFormatter
      * @param int    $position Position at which to start the parsing in $value (zero-based)
      *                         If no error occurs before $value is consumed, $parse_pos will
      *                         contain -1 otherwise it will contain the position at which parsing
-     *                         ended. If $parse_pos > strlen($value), the parse fails immediately.
+     *                         ended. If $parse_pos > \strlen($value), the parse fails immediately.
      *
      * @return string Localtime compatible array of integers: contains 24 hour clock value in tm_hour field
      *
@@ -418,7 +418,7 @@ class IntlDateFormatter
      * @param int    $position Not supported. Position at which to start the parsing in $value (zero-based)
      *                         If no error occurs before $value is consumed, $parse_pos will
      *                         contain -1 otherwise it will contain the position at which parsing
-     *                         ended. If $parse_pos > strlen($value), the parse fails immediately.
+     *                         ended. If $parse_pos > \strlen($value), the parse fails immediately.
      *
      * @return int Parsed value as a timestamp
      *
@@ -523,7 +523,7 @@ class IntlDateFormatter
     {
         if (null === $timeZoneId) {
             // In PHP 5.5 if $timeZoneId is null it fallbacks to `date_default_timezone_get()` method
-            if (\PHP_VERSION_ID >= 50500 || (extension_loaded('intl') && method_exists('IntlDateFormatter', 'setTimeZone'))) {
+            if (\PHP_VERSION_ID >= 50500 || (\extension_loaded('intl') && method_exists('IntlDateFormatter', 'setTimeZone'))) {
                 $timeZoneId = date_default_timezone_get();
             } else {
                 // TODO: changes were made to ext/intl in PHP 5.4.4 release that need to be investigated since it will
@@ -554,7 +554,7 @@ class IntlDateFormatter
                 $timeZone = $this->getTimeZoneId();
             }
         } catch (\Exception $e) {
-            if (\PHP_VERSION_ID >= 50500 || (extension_loaded('intl') && method_exists('IntlDateFormatter', 'setTimeZone'))) {
+            if (\PHP_VERSION_ID >= 50500 || (\extension_loaded('intl') && method_exists('IntlDateFormatter', 'setTimeZone'))) {
                 $timeZoneId = $timeZone = $this->getTimeZoneId();
             } else {
                 $timeZoneId = 'UTC';

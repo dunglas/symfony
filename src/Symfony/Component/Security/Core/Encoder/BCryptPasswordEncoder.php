@@ -31,7 +31,7 @@ class BCryptPasswordEncoder extends BasePasswordEncoder
      */
     public function __construct($cost)
     {
-        if (!function_exists('password_hash')) {
+        if (!\function_exists('password_hash')) {
             throw new \RuntimeException('To use the BCrypt encoder, you need to upgrade to PHP 5.5 or install the "ircmaxell/password-compat" via Composer.');
         }
 
@@ -63,7 +63,7 @@ class BCryptPasswordEncoder extends BasePasswordEncoder
      *
      * @see http://lxr.php.net/xref/PHP_5_5/ext/standard/password.c#111
      */
-    public function encodePassword($raw, $salt)
+    public function encodePassw\ord($raw, $salt)
     {
         if ($this->isPasswordTooLong($raw)) {
             throw new BadCredentialsException('Invalid password.');

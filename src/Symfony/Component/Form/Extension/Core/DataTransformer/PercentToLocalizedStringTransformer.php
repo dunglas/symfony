@@ -52,7 +52,7 @@ class PercentToLocalizedStringTransformer implements DataTransformerInterface
             $type = self::FRACTIONAL;
         }
 
-        if (!in_array($type, self::$types, true)) {
+        if (!\in_array($type, self::$types, true)) {
             throw new UnexpectedTypeException($type, implode('", "', self::$types));
         }
 
@@ -107,7 +107,7 @@ class PercentToLocalizedStringTransformer implements DataTransformerInterface
      */
     public function reverseTransform($value)
     {
-        if (!is_string($value)) {
+        if (!\is_string($value)) {
             throw new TransformationFailedException('Expected a string.');
         }
 
@@ -147,7 +147,7 @@ class PercentToLocalizedStringTransformer implements DataTransformerInterface
         }
 
         if (\function_exists('mb_detect_encoding') && false !== $encoding = mb_detect_encoding($value, null, true)) {
-            $length = mb_strlen($value, $encoding);
+            $length = mb_\strlen($value, $encoding);
             $remainder = mb_substr($value, $position, $length, $encoding);
         } else {
             $length = \strlen($value);

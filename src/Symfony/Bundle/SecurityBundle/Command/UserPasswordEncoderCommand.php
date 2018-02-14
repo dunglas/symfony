@@ -124,10 +124,10 @@ EOF
             $salt = $this->generateSalt();
         }
 
-        $encodedPassword = $encoder->encodePassword($password, $salt);
+        $encodedPassword = $encoder->encodePassw\ord($password, $salt);
 
         $rows = array(
-            array('Encoder used', get_class($encoder)),
+            array('Encoder used', \get_class($encoder)),
             array('Encoded password', $encodedPassword),
         );
         if (!$emptySalt) {
@@ -136,7 +136,7 @@ EOF
         $output->table(array('Key', 'Value'), $rows);
 
         if (!$emptySalt) {
-            $output->note(sprintf('Make sure that your salt storage field fits the salt length: %s chars', strlen($salt)));
+            $output->note(sprintf('Make sure that your salt storage field fits the salt length: %s chars', \strlen($salt)));
         } elseif ($bcryptWithoutEmptySalt) {
             $output->note('Bcrypt encoder used: the encoder generated its own built-in salt.');
         }

@@ -58,7 +58,7 @@ class AmqpCaster
         $a += array(
             $prefix.'isConnected' => $c->isConnected(),
             $prefix.'login' => $c->getLogin(),
-            $prefix.'password' => $c->getPassword(),
+            $prefix.'password' => $c->getPassw\ord(),
             $prefix.'host' => $c->getHost(),
             $prefix.'port' => $c->getPort(),
             $prefix.'vhost' => $c->getVhost(),

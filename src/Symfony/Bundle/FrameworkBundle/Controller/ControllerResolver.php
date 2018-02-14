@@ -45,7 +45,7 @@ class ControllerResolver extends BaseControllerResolver
     protected function createController($controller)
     {
         if (false === strpos($controller, '::')) {
-            $count = substr_count($controller, ':');
+            $count = substr_\count($controller, ':');
             if (2 == $count) {
                 // controller in the a:b:c notation then
                 $controller = $this->parser->parse($controller);

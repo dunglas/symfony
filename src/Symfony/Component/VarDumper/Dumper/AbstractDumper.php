@@ -42,7 +42,7 @@ abstract class AbstractDumper implements DataDumperInterface, DumperInterface
         $this->decimalPoint = localeconv();
         $this->decimalPoint = $this->decimalPoint['decimal_point'];
         $this->setOutput($output ?: static::$defaultOutput);
-        if (!$output && is_string(static::$defaultOutput)) {
+        if (!$output && \is_string(static::$defaultOutput)) {
             static::$defaultOutput = $this->outputStream;
         }
     }
@@ -58,11 +58,11 @@ abstract class AbstractDumper implements DataDumperInterface, DumperInterface
     {
         $prev = null !== $this->outputStream ? $this->outputStream : $this->lineDumper;
 
-        if (is_callable($output)) {
+        if (\is_callable($output)) {
             $this->outputStream = null;
             $this->lineDumper = $output;
         } else {
-            if (is_string($output)) {
+            if (\is_string($output)) {
                 $output = fopen($output, 'wb');
             }
             $this->outputStream = $output;
@@ -92,10 +92,10 @@ abstract class AbstractDumper implements DataDumperInterface, DumperInterface
         $supported = true;
         set_error_handler(function () use (&$supported) { $supported = false; });
 
-        if (function_exists('mb_encoding_aliases') && mb_encoding_aliases($charset)) {
+        if (\function_exists('mb_encoding_aliases') && mb_encoding_aliases($charset)) {
             $this->charset = $charset;
             $this->charsetConverter = 'mbstring';
-        } elseif (function_exists('iconv')) {
+        } elseif (\function_exists('iconv')) {
             $supported = true;
             iconv($charset, 'UTF-8', '');
             if ($supported) {
@@ -165,7 +165,7 @@ abstract class AbstractDumper implements DataDumperInterface, DumperInterface
      */
     protected function dumpLine($depth)
     {
-        call_user_func($this->lineDumper, $this->line, $depth, $this->indentPad);
+        \call_user_func($this->lineDumper, $this->line, $depth, $this->indentPad);
         $this->line = '';
     }
 
@@ -206,7 +206,7 @@ abstract class AbstractDumper implements DataDumperInterface, DumperInterface
         }
 
         $s .= $s;
-        $len = strlen($s);
+        $len = \strlen($s);
 
         for ($i = $len >> 1, $j = 0; $i < $len; ++$i, ++$j) {
             switch (true) {
@@ -221,7 +221,7 @@ abstract class AbstractDumper implements DataDumperInterface, DumperInterface
 
                 default:
                     $s[$j] = "\xC3";
-                    $s[++$j] = chr(ord($s[$i]) - 64);
+                    $s[++$j] = \chr(\ord($s[$i]) - 64);
                     break;
             }
         }

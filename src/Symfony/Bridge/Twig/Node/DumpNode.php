@@ -56,7 +56,7 @@ class DumpNode extends Node
                 ->write("}\n")
                 ->addDebugInfo($this)
                 ->write(sprintf('\Symfony\Component\VarDumper\VarDumper::dump($%svars);'."\n", $this->varPrefix));
-        } elseif (($values = $this->getNode('values')) && 1 === $values->count()) {
+        } elseif (($values = $this->getNode('values')) && 1 === $values->\count()) {
             $compiler
                 ->addDebugInfo($this)
                 ->write('\Symfony\Component\VarDumper\VarDumper::dump(')

@@ -118,7 +118,7 @@ abstract class AbstractCloner implements ClonerInterface
             $casters = static::$defaultCasters;
         }
         $this->addCasters($casters);
-        $this->useExt = extension_loaded('symfony_debug');
+        $this->useExt = \extension_loaded('symfony_debug');
     }
 
     /**
@@ -171,7 +171,7 @@ abstract class AbstractCloner implements ClonerInterface
         $this->filter = $filter;
         $this->prevErrorHandler = set_error_handler(array($this, 'handleError'));
         try {
-            if (!function_exists('iconv')) {
+            if (!\function_exists('iconv')) {
                 $this->maxString = -1;
             }
             $data = $this->doClone($var);
@@ -273,9 +273,9 @@ abstract class AbstractCloner implements ClonerInterface
     private function callCaster($callback, $obj, $a, $stub, $isNested)
     {
         try {
-            $cast = call_user_func($callback, $obj, $a, $stub, $isNested, $this->filter);
+            $cast = \call_user_func($callback, $obj, $a, $stub, $isNested, $this->filter);
 
-            if (is_array($cast)) {
+            if (\is_array($cast)) {
                 $a = $cast;
             }
         } catch (\Exception $e) {
@@ -298,7 +298,7 @@ abstract class AbstractCloner implements ClonerInterface
         }
 
         if ($this->prevErrorHandler) {
-            return call_user_func($this->prevErrorHandler, $type, $msg, $file, $line, $context);
+            return \call_user_func($this->prevErrorHandler, $type, $msg, $file, $line, $context);
         }
 
         return false;

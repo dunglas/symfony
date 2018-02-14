@@ -38,10 +38,10 @@ abstract class AbstractToken implements TokenInterface
     public function __construct(array $roles = array())
     {
         foreach ($roles as $role) {
-            if (is_string($role)) {
+            if (\is_string($role)) {
                 $role = new Role($role);
             } elseif (!$role instanceof RoleInterface) {
-                throw new \InvalidArgumentException(sprintf('$roles must be an array of strings, or RoleInterface instances, but got %s.', gettype($role)));
+                throw new \InvalidArgumentException(sprintf('$roles must be an array of strings, or RoleInterface instances, but got %s.', \gettype($role)));
             }
 
             $this->roles[] = $role;
@@ -88,7 +88,7 @@ abstract class AbstractToken implements TokenInterface
      */
     public function setUser($user)
     {
-        if (!($user instanceof UserInterface || (is_object($user) && method_exists($user, '__toString')) || is_string($user))) {
+        if (!($user instanceof UserInterface || (\is_object($user) && method_exists($user, '__toString')) || \is_string($user))) {
             throw new \InvalidArgumentException('$user must be an instanceof UserInterface, an object implementing a __toString method, or a primitive string.');
         }
 
@@ -146,7 +146,7 @@ abstract class AbstractToken implements TokenInterface
     {
         return serialize(
             array(
-                is_object($this->user) ? clone $this->user : $this->user,
+                \is_object($this->user) ? clone $this->user : $this->user,
                 $this->authenticated,
                 array_map(function ($role) { return clone $role; }, $this->roles),
                 $this->attributes,
@@ -228,7 +228,7 @@ abstract class AbstractToken implements TokenInterface
      */
     public function __toString()
     {
-        $class = get_class($this);
+        $class = \get_class($this);
         $class = substr($class, strrpos($class, '\\') + 1);
 
         $roles = array();
@@ -249,7 +249,7 @@ abstract class AbstractToken implements TokenInterface
             return !(bool) $this->user->isEqualTo($user);
         }
 
-        if ($this->user->getPassword() !== $user->getPassword()) {
+        if ($this->user->getPassw\ord() !== $user->getPassw\ord()) {
             return true;
         }
 

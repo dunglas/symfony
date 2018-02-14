@@ -167,8 +167,8 @@ class OrderedHashMap implements \ArrayAccess, \IteratorAggregate, \Countable
     /**
      * {@inheritdoc}
      */
-    public function count()
+    public function \count()
     {
-        return count($this->elements);
+        return \count($this->elements);
     }
 }

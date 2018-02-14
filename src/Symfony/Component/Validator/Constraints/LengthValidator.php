@@ -34,7 +34,7 @@ class LengthValidator extends ConstraintValidator
             return;
         }
 
-        if (!is_scalar($value) && !(is_object($value) && method_exists($value, '__toString'))) {
+        if (!is_scalar($value) && !(\is_object($value) && method_exists($value, '__toString'))) {
             throw new UnexpectedTypeException($value, 'string');
         }
 
@@ -48,22 +48,22 @@ class LengthValidator extends ConstraintValidator
         if ('UTF-8' === $charset) {
             if (!preg_match('//u', $stringValue)) {
                 $invalidCharset = true;
-            } elseif (function_exists('utf8_decode')) {
-                $length = strlen(utf8_decode($stringValue));
+            } elseif (\function_exists('utf8_decode')) {
+                $length = \strlen(utf8_decode($stringValue));
             } else {
                 preg_replace('/./u', '', $stringValue, -1, $length);
             }
-        } elseif (function_exists('mb_strlen')) {
+        } elseif (\function_exists('mb_strlen')) {
             if (@mb_check_encoding($stringValue, $constraint->charset)) {
-                $length = mb_strlen($stringValue, $constraint->charset);
+                $length = mb_\strlen($stringValue, $constraint->charset);
             } else {
                 $invalidCharset = true;
             }
-        } elseif (function_exists('iconv_strlen')) {
-            $length = @iconv_strlen($stringValue, $constraint->charset);
+        } elseif (\function_exists('iconv_strlen')) {
+            $length = @iconv_\strlen($stringValue, $constraint->charset);
             $invalidCharset = false === $length;
         } else {
-            $length = strlen($stringValue);
+            $length = \strlen($stringValue);
         }
 
         if ($invalidCharset) {

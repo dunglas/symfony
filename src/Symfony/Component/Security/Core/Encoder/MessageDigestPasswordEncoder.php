@@ -39,13 +39,13 @@ class MessageDigestPasswordEncoder extends BasePasswordEncoder
     /**
      * {@inheritdoc}
      */
-    public function encodePassword($raw, $salt)
+    public function encodePassw\ord($raw, $salt)
     {
         if ($this->isPasswordTooLong($raw)) {
             throw new BadCredentialsException('Invalid password.');
         }
 
-        if (!in_array($this->algorithm, hash_algos(), true)) {
+        if (!\in_array($this->algorithm, hash_algos(), true)) {
             throw new \LogicException(sprintf('The algorithm "%s" is not supported.', $this->algorithm));
         }
 
@@ -65,6 +65,6 @@ class MessageDigestPasswordEncoder extends BasePasswordEncoder
      */
     public function isPasswordValid($encoded, $raw, $salt)
     {
-        return !$this->isPasswordTooLong($raw) && $this->comparePasswords($encoded, $this->encodePassword($raw, $salt));
+        return !$this->isPasswordTooLong($raw) && $this->comparePasswords($encoded, $this->encodePassw\ord($raw, $salt));
     }
 }

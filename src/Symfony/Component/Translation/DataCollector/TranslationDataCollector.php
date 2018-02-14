@@ -126,11 +126,11 @@ class TranslationDataCollector extends DataCollector implements LateDataCollecto
     {
         $string = trim(preg_replace('/\s+/', ' ', $string));
 
-        if (function_exists('mb_strlen') && false !== $encoding = mb_detect_encoding($string)) {
-            if (mb_strlen($string, $encoding) > $length) {
+        if (\function_exists('mb_strlen') && false !== $encoding = mb_detect_encoding($string)) {
+            if (mb_\strlen($string, $encoding) > $length) {
                 return mb_substr($string, 0, $length - 3, $encoding).'...';
             }
-        } elseif (strlen($string) > $length) {
+        } elseif (\strlen($string) > $length) {
             return substr($string, 0, $length - 3).'...';
         }
 

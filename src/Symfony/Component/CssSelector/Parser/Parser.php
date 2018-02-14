@@ -167,7 +167,7 @@ class Parser implements ParserInterface
     {
         $stream->skipWhitespace();
 
-        $selectorStart = count($stream->getUsed());
+        $selectorStart = \count($stream->getUsed());
         $result = $this->parseElementNode($stream);
         $pseudoElement = null;
 
@@ -204,7 +204,7 @@ class Parser implements ParserInterface
                 }
 
                 $identifier = $stream->getNextIdentifier();
-                if (in_array(strtolower($identifier), array('first-line', 'first-letter', 'before', 'after'))) {
+                if (\in_array(strtolower($identifier), array('first-line', 'first-letter', 'before', 'after'))) {
                     // Special case: CSS 2.1 pseudo-elements can have a single ':'.
                     // Any new pseudo-element must have two.
                     $pseudoElement = $identifier;
@@ -270,7 +270,7 @@ class Parser implements ParserInterface
             }
         }
 
-        if (count($stream->getUsed()) === $selectorStart) {
+        if (\count($stream->getUsed()) === $selectorStart) {
             throw SyntaxErrorException::unexpectedToken('selector', $stream->getPeek());
         }
 

@@ -283,7 +283,7 @@ class Regex implements ValueInterface
     {
         $replace = function ($subject) use ($replacement) {
             $subject = $subject[0];
-            $replace = 0 === substr_count($subject, '\\') % 2;
+            $replace = 0 === substr_\count($subject, '\\') % 2;
 
             return $replace ? str_replace('.', $replacement, $subject) : $subject;
         };

@@ -143,7 +143,7 @@ class ResolveDefinitionTemplatesPass implements CompilerPassInterface
                 throw new RuntimeException(sprintf('Invalid argument key "%s" found.', $k));
             }
 
-            $index = (int) substr($k, strlen('index_'));
+            $index = (int) substr($k, \strlen('index_'));
             $def->replaceArgument($index, $v);
         }
 
@@ -153,7 +153,7 @@ class ResolveDefinitionTemplatesPass implements CompilerPassInterface
         }
 
         // append method calls
-        if (count($calls = $definition->getMethodCalls()) > 0) {
+        if (\count($calls = $definition->getMethodCalls()) > 0) {
             $def->setMethodCalls(array_merge($def->getMethodCalls(), $calls));
         }
 

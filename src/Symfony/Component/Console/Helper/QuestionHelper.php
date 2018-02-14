@@ -78,7 +78,7 @@ class QuestionHelper extends Helper
      */
     public function setInputStream($stream)
     {
-        if (!is_resource($stream)) {
+        if (!\is_resource($stream)) {
             throw new \InvalidArgumentException('Input stream must be a valid resource.');
         }
 
@@ -140,10 +140,10 @@ class QuestionHelper extends Helper
                 $ret = trim($ret);
             }
         } else {
-            $ret = trim($this->autocomplete($output, $question, $inputStream, is_array($autocomplete) ? $autocomplete : iterator_to_array($autocomplete, false)));
+            $ret = trim($this->autocomplete($output, $question, $inputStream, \is_array($autocomplete) ? $autocomplete : iterator_to_array($autocomplete, false)));
         }
 
-        $ret = strlen($ret) > 0 ? $ret : $question->getDefault();
+        $ret = \strlen($ret) > 0 ? $ret : $question->getDefault();
 
         if ($normalizer = $question->getNormalizer()) {
             return $normalizer($ret);
@@ -164,7 +164,7 @@ class QuestionHelper extends Helper
 
             $messages = (array) $question->getQuestion();
             foreach ($question->getChoices() as $key => $value) {
-                $width = $maxWidth - $this->strlen($key);
+                $width = $maxWidth - $this->\strlen($key);
                 $messages[] = '  [<info>'.$key.str_repeat(' ', $width).'</info>] '.$value;
             }
 
@@ -207,7 +207,7 @@ class QuestionHelper extends Helper
         $i = 0;
         $ofs = -1;
         $matches = $autocomplete;
-        $numMatches = count($matches);
+        $numMatches = \count($matches);
 
         $sttyMode = shell_exec('stty -g');
 
@@ -232,7 +232,7 @@ class QuestionHelper extends Helper
                 if (0 === $i) {
                     $ofs = -1;
                     $matches = $autocomplete;
-                    $numMatches = count($matches);
+                    $numMatches = \count($matches);
                 } else {
                     $numMatches = 0;
                 }
@@ -256,13 +256,13 @@ class QuestionHelper extends Helper
                     $ofs += ('A' === $c[2]) ? -1 : 1;
                     $ofs = ($numMatches + $ofs) % $numMatches;
                 }
-            } elseif (ord($c) < 32) {
+            } elseif (\ord($c) < 32) {
                 if ("\t" === $c || "\n" === $c) {
                     if ($numMatches > 0 && -1 !== $ofs) {
                         $ret = $matches[$ofs];
                         // Echo out remaining chars for current match
                         $output->write(substr($ret, $i));
-                        $i = strlen($ret);
+                        $i = \strlen($ret);
                     }
 
                     if ("\n" === $c) {
@@ -284,7 +284,7 @@ class QuestionHelper extends Helper
 
                 foreach ($autocomplete as $value) {
                     // If typed characters match the beginning chunk of value (e.g. [AcmeDe]moBundle)
-                    if (0 === strpos($value, $ret) && $i !== strlen($value)) {
+                    if (0 === strpos($value, $ret) && $i !== \strlen($value)) {
                         $matches[$numMatches++] = $value;
                     }
                 }
@@ -391,7 +391,7 @@ class QuestionHelper extends Helper
             }
 
             try {
-                return call_user_func($question->getValidator(), $interviewer());
+                return \call_user_func($question->getValidator(), $interviewer());
             } catch (RuntimeException $e) {
                 throw $e;
             } catch (\Exception $error) {

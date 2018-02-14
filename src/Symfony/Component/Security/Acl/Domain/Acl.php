@@ -221,7 +221,7 @@ class Acl implements AuditableAclInterface, NotifyPropertyChanged
             return true;
         }
 
-        if (!is_array($sids)) {
+        if (!\is_array($sids)) {
             $sids = array($sids);
         }
 
@@ -402,7 +402,7 @@ class Acl implements AuditableAclInterface, NotifyPropertyChanged
         $this->$property = array_values($this->$property);
         $this->onPropertyChanged($property, $oldValue, $this->$property);
 
-        for ($i = $index, $c = count($this->$property); $i < $c; ++$i) {
+        for ($i = $index, $c = \count($this->$property); $i < $c; ++$i) {
             $this->onEntryPropertyChanged($aces[$i], 'aceOrder', $i + 1, $i);
         }
     }
@@ -428,7 +428,7 @@ class Acl implements AuditableAclInterface, NotifyPropertyChanged
         $aces[$field] = array_values($aces[$field]);
         $this->onPropertyChanged($property, $oldValue, $this->$property);
 
-        for ($i = $index, $c = count($aces[$field]); $i < $c; ++$i) {
+        for ($i = $index, $c = \count($aces[$field]); $i < $c; ++$i) {
             $this->onEntryPropertyChanged($aces[$field][$i], 'aceOrder', $i + 1, $i);
         }
     }
@@ -448,11 +448,11 @@ class Acl implements AuditableAclInterface, NotifyPropertyChanged
      */
     private function insertAce($property, $index, $mask, SecurityIdentityInterface $sid, $granting, $strategy = null)
     {
-        if ($index < 0 || $index > count($this->$property)) {
-            throw new \OutOfBoundsException(sprintf('The index must be in the interval [0, %d].', count($this->$property)));
+        if ($index < 0 || $index > \count($this->$property)) {
+            throw new \OutOfBoundsException(sprintf('The index must be in the interval [0, %d].', \count($this->$property)));
         }
 
-        if (!is_int($mask)) {
+        if (!\is_int($mask)) {
             throw new \InvalidArgumentException('$mask must be an integer.');
         }
 
@@ -468,12 +468,12 @@ class Acl implements AuditableAclInterface, NotifyPropertyChanged
         $oldValue = $this->$property;
         if (isset($aces[$index])) {
             $this->$property = array_merge(
-                array_slice($this->$property, 0, $index),
+                \array_slice($this->$property, 0, $index),
                 array(true),
-                array_slice($this->$property, $index)
+                \array_slice($this->$property, $index)
             );
 
-            for ($i = $index, $c = count($this->$property) - 1; $i < $c; ++$i) {
+            for ($i = $index, $c = \count($this->$property) - 1; $i < $c; ++$i) {
                 $this->onEntryPropertyChanged($aces[$i + 1], 'aceOrder', $i, $i + 1);
             }
         }
@@ -498,11 +498,11 @@ class Acl implements AuditableAclInterface, NotifyPropertyChanged
      */
     private function insertFieldAce($property, $index, $field, $mask, SecurityIdentityInterface $sid, $granting, $strategy = null)
     {
-        if (0 === strlen($field)) {
+        if (0 === \strlen($field)) {
             throw new \InvalidArgumentException('$field cannot be empty.');
         }
 
-        if (!is_int($mask)) {
+        if (!\is_int($mask)) {
             throw new \InvalidArgumentException('$mask must be an integer.');
         }
 
@@ -519,19 +519,19 @@ class Acl implements AuditableAclInterface, NotifyPropertyChanged
             $aces[$field] = array();
         }
 
-        if ($index < 0 || $index > count($aces[$field])) {
-            throw new \OutOfBoundsException(sprintf('The index must be in the interval [0, %d].', count($this->$property)));
+        if ($index < 0 || $index > \count($aces[$field])) {
+            throw new \OutOfBoundsException(sprintf('The index must be in the interval [0, %d].', \count($this->$property)));
         }
 
         $oldValue = $aces;
         if (isset($aces[$field][$index])) {
             $aces[$field] = array_merge(
-                array_slice($aces[$field], 0, $index),
+                \array_slice($aces[$field], 0, $index),
                 array(true),
-                array_slice($aces[$field], $index)
+                \array_slice($aces[$field], $index)
             );
 
-            for ($i = $index, $c = count($aces[$field]) - 1; $i < $c; ++$i) {
+            for ($i = $index, $c = \count($aces[$field]) - 1; $i < $c; ++$i) {
                 $this->onEntryPropertyChanged($aces[$field][$i + 1], 'aceOrder', $i, $i + 1);
             }
         }
@@ -609,7 +609,7 @@ class Acl implements AuditableAclInterface, NotifyPropertyChanged
      */
     private function updateFieldAce($property, $index, $field, $mask, $strategy = null)
     {
-        if (0 === strlen($field)) {
+        if (0 === \strlen($field)) {
             throw new \InvalidArgumentException('$field cannot be empty.');
         }
 

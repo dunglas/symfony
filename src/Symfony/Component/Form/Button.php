@@ -427,7 +427,7 @@ class Button implements \IteratorAggregate, FormInterface
      *
      * @return int Always returns 0
      */
-    public function count()
+    public function \count()
     {
         return 0;
     }

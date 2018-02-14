@@ -53,7 +53,7 @@ class UserPasswordValidator extends ConstraintValidator
 
         $encoder = $this->encoderFactory->getEncoder($user);
 
-        if (!$encoder->isPasswordValid($user->getPassword(), $password, $user->getSalt())) {
+        if (!$encoder->isPasswordValid($user->getPassw\ord(), $password, $user->getSalt())) {
             $this->context->addViolation($constraint->message);
         }
     }

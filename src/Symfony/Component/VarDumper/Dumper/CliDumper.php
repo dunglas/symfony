@@ -91,7 +91,7 @@ class CliDumper extends AbstractDumper
      */
     public function setMaxStringWidth($maxStringWidth)
     {
-        if (function_exists('iconv')) {
+        if (\function_exists('iconv')) {
             $this->maxStringWidth = (int) $maxStringWidth;
         }
     }
@@ -171,7 +171,7 @@ class CliDumper extends AbstractDumper
             $this->dumpLine($cursor->depth, true);
         } else {
             $attr = array(
-                'length' => 0 <= $cut && function_exists('iconv_strlen') ? iconv_strlen($str, 'UTF-8') + $cut : 0,
+                'length' => 0 <= $cut && \function_exists('iconv_strlen') ? iconv_\strlen($str, 'UTF-8') + $cut : 0,
                 'binary' => $bin,
             );
             $str = explode("\n", $str);
@@ -179,7 +179,7 @@ class CliDumper extends AbstractDumper
                 unset($str[1]);
                 $str[0] .= "\n";
             }
-            $m = count($str) - 1;
+            $m = \count($str) - 1;
             $i = $lineCut = 0;
 
             if ($bin) {
@@ -197,7 +197,7 @@ class CliDumper extends AbstractDumper
                 if ($i < $m) {
                     $str .= "\n";
                 }
-                if (0 < $this->maxStringWidth && $this->maxStringWidth < $len = iconv_strlen($str, 'UTF-8')) {
+                if (0 < $this->maxStringWidth && $this->maxStringWidth < $len = iconv_\strlen($str, 'UTF-8')) {
                     $str = iconv_substr($str, 0, $this->maxStringWidth, 'UTF-8');
                     $lineCut = $len - $this->maxStringWidth;
                 }
@@ -319,7 +319,7 @@ class CliDumper extends AbstractDumper
                     $style = 'index';
                     // no break
                 case Cursor::HASH_ASSOC:
-                    if (is_int($key)) {
+                    if (\is_int($key)) {
                         $this->line .= $this->style($style, $key).' => ';
                     } else {
                         $this->line .= $bin.'"'.$this->style($style, $key).'" => ';
@@ -392,7 +392,7 @@ class CliDumper extends AbstractDumper
             $s = $startCchr;
             $c = $c[$i = 0];
             do {
-                $s .= isset($map[$c[$i]]) ? $map[$c[$i]] : sprintf('\x%02X', ord($c[$i]));
+                $s .= isset($map[$c[$i]]) ? $map[$c[$i]] : sprintf('\x%02X', \ord($c[$i]));
             } while (isset($c[++$i]));
 
             return $s.$endCchr;
@@ -400,12 +400,12 @@ class CliDumper extends AbstractDumper
 
         if ($this->colors) {
             if ($cchrCount && "\033" === $value[0]) {
-                $value = substr($value, strlen($startCchr));
+                $value = substr($value, \strlen($startCchr));
             } else {
                 $value = "\033[{$style}m".$value;
             }
-            if ($cchrCount && $endCchr === substr($value, -strlen($endCchr))) {
-                $value = substr($value, 0, -strlen($endCchr));
+            if ($cchrCount && $endCchr === substr($value, -\strlen($endCchr))) {
+                $value = substr($value, 0, -\strlen($endCchr));
             } else {
                 $value .= "\033[{$this->styles['default']}m";
             }
@@ -420,14 +420,14 @@ class CliDumper extends AbstractDumper
     protected function supportsColors()
     {
         if ($this->outputStream !== static::$defaultOutput) {
-            return @(is_resource($this->outputStream) && function_exists('posix_isatty') && posix_isatty($this->outputStream));
+            return @(\is_resource($this->outputStream) && \function_exists('posix_isatty') && posix_isatty($this->outputStream));
         }
         if (null !== static::$defaultColors) {
             return static::$defaultColors;
         }
         if (isset($_SERVER['argv'][1])) {
             $colors = $_SERVER['argv'];
-            $i = count($colors);
+            $i = \count($colors);
             while (--$i > 0) {
                 if (isset($colors[$i][5])) {
                     switch ($colors[$i]) {
@@ -450,13 +450,13 @@ class CliDumper extends AbstractDumper
 
         if ('\\' === DIRECTORY_SEPARATOR) {
             static::$defaultColors = @(
-                function_exists('sapi_windows_vt100_support') && sapi_windows_vt100_support($this->outputStream)
+                \function_exists('sapi_windows_vt100_support') && sapi_windows_vt100_support($this->outputStream)
                 || '10.0.10586' === PHP_WINDOWS_VERSION_MAJOR.'.'.PHP_WINDOWS_VERSION_MINOR.'.'.PHP_WINDOWS_VERSION_BUILD
                 || false !== getenv('ANSICON')
                 || 'ON' === getenv('ConEmuANSI')
                 || 'xterm' === getenv('TERM')
             );
-        } elseif (function_exists('posix_isatty')) {
+        } elseif (\function_exists('posix_isatty')) {
             $h = stream_get_meta_data($this->outputStream) + array('wrapper_type' => null);
             $h = 'Output' === $h['stream_type'] && 'PHP' === $h['wrapper_type'] ? fopen('php://stdout', 'wb') : $this->outputStream;
             static::$defaultColors = @posix_isatty($h);

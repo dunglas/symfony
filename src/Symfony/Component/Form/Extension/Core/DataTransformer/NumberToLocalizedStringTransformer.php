@@ -162,7 +162,7 @@ class NumberToLocalizedStringTransformer implements DataTransformerInterface
      */
     public function reverseTransform($value)
     {
-        if (!is_string($value)) {
+        if (!\is_string($value)) {
             throw new TransformationFailedException('Expected a string.');
         }
 
@@ -205,15 +205,15 @@ class NumberToLocalizedStringTransformer implements DataTransformerInterface
             throw new TransformationFailedException('I don\'t have a clear idea what infinity looks like');
         }
 
-        if (is_int($result) && $result === (int) $float = (float) $result) {
+        if (\is_int($result) && $result === (int) $float = (float) $result) {
             $result = $float;
         }
 
-        if (function_exists('mb_detect_encoding') && false !== $encoding = mb_detect_encoding($value, null, true)) {
-            $length = mb_strlen($value, $encoding);
+        if (\function_exists('mb_detect_encoding') && false !== $encoding = mb_detect_encoding($value, null, true)) {
+            $length = mb_\strlen($value, $encoding);
             $remainder = mb_substr($value, $position, $length, $encoding);
         } else {
-            $length = strlen($value);
+            $length = \strlen($value);
             $remainder = substr($value, $position, $length);
         }
 

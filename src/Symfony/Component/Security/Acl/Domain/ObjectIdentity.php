@@ -56,7 +56,7 @@ final class ObjectIdentity implements ObjectIdentityInterface
      */
     public static function fromDomainObject($domainObject)
     {
-        if (!is_object($domainObject)) {
+        if (!\is_object($domainObject)) {
             throw new InvalidDomainObjectException('$domainObject must be an object.');
         }
 

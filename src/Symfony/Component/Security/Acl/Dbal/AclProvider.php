@@ -89,7 +89,7 @@ class AclProvider implements AclProviderInterface
         $currentBatch = array();
         $oidLookup = array();
 
-        for ($i = 0, $c = count($oids); $i < $c; ++$i) {
+        for ($i = 0, $c = \count($oids); $i < $c; ++$i) {
             $oid = $oids[$i];
             $oidLookupKey = $oid->getIdentifier().$oid->getType();
             $oidLookup[$oidLookupKey] = $oid;
@@ -158,12 +158,12 @@ class AclProvider implements AclProviderInterface
             }
 
             // Is it time to load the current batch?
-            $currentBatchesCount = count($currentBatch);
+            $currentBatchesCount = \count($currentBatch);
             if ($currentBatchesCount > 0 && (self::MAX_BATCH_SIZE === $currentBatchesCount || ($i + 1) === $c)) {
                 try {
                     $loadedBatch = $this->lookupObjectIdentities($currentBatch, $sids, $oidLookup);
                 } catch (AclNotFoundException $e) {
-                    if ($result->count()) {
+                    if ($result->\count()) {
                         $partialResultException = new NotAllAclsFoundException('The provider could not find ACLs for all object identities.');
                         $partialResultException->setPartialResult($result);
                         throw $partialResultException;
@@ -190,8 +190,8 @@ class AclProvider implements AclProviderInterface
         // check that we got ACLs for all the identities
         foreach ($oids as $oid) {
             if (!$result->contains($oid)) {
-                if (1 === count($oids)) {
-                    $objectName = method_exists($oid, '__toString') ? $oid : get_class($oid);
+                if (1 === \count($oids)) {
+                    $objectName = method_exists($oid, '__toString') ? $oid : \get_class($oid);
                     throw new AclNotFoundException(sprintf('No ACL found for %s.', $objectName));
                 }
 
@@ -263,7 +263,7 @@ SELECTCLAUSE;
 SELECTCLAUSE;
 
         $types = array();
-        $count = count($batch);
+        $count = \count($batch);
         for ($i = 0; $i < $count; ++$i) {
             if (!isset($types[$batch[$i]->getType()])) {
                 $types[$batch[$i]->getType()] = true;
@@ -271,13 +271,13 @@ SELECTCLAUSE;
                 // if there is more than one type we can safely break out of the
                 // loop, because it is the differentiator factor on whether to
                 // query for only one or more class types
-                if (count($types) > 1) {
+                if (\count($types) > 1) {
                     break;
                 }
             }
         }
 
-        if (1 === count($types)) {
+        if (1 === \count($types)) {
             $ids = array();
             for ($i = 0; $i < $count; ++$i) {
                 $identifier = (string) $batch[$i]->getIdentifier();
@@ -651,7 +651,7 @@ QUERY;
         $aclParentAclProperty->setAccessible(false);
 
         // this should never be true if the database integrity hasn't been compromised
-        if ($processed < count($parentIdToFill)) {
+        if ($processed < \count($parentIdToFill)) {
             throw new \RuntimeException('Not all parent ids were populated. This implies an integrity problem.');
         }
 

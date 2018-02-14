@@ -115,11 +115,11 @@ class Unescaper
                 // U+2029 PARAGRAPH SEPARATOR
                 return "\xE2\x80\xA9";
             case 'x':
-                return self::utf8chr(hexdec(substr($value, 2, 2)));
+                return self::utf8\chr(hexdec(substr($value, 2, 2)));
             case 'u':
-                return self::utf8chr(hexdec(substr($value, 2, 4)));
+                return self::utf8\chr(hexdec(substr($value, 2, 4)));
             case 'U':
-                return self::utf8chr(hexdec(substr($value, 2, 8)));
+                return self::utf8\chr(hexdec(substr($value, 2, 8)));
         }
     }
 
@@ -130,18 +130,18 @@ class Unescaper
      *
      * @return string The corresponding UTF-8 character
      */
-    private static function utf8chr($c)
+    private static function utf8\chr($c)
     {
         if (0x80 > $c %= 0x200000) {
-            return chr($c);
+            return \chr($c);
         }
         if (0x800 > $c) {
-            return chr(0xC0 | $c >> 6).chr(0x80 | $c & 0x3F);
+            return \chr(0xC0 | $c >> 6).\chr(0x80 | $c & 0x3F);
         }
         if (0x10000 > $c) {
-            return chr(0xE0 | $c >> 12).chr(0x80 | $c >> 6 & 0x3F).chr(0x80 | $c & 0x3F);
+            return \chr(0xE0 | $c >> 12).\chr(0x80 | $c >> 6 & 0x3F).\chr(0x80 | $c & 0x3F);
         }
 
-        return chr(0xF0 | $c >> 18).chr(0x80 | $c >> 12 & 0x3F).chr(0x80 | $c >> 6 & 0x3F).chr(0x80 | $c & 0x3F);
+        return \chr(0xF0 | $c >> 18).\chr(0x80 | $c >> 12 & 0x3F).\chr(0x80 | $c >> 6 & 0x3F).\chr(0x80 | $c & 0x3F);
     }
 }

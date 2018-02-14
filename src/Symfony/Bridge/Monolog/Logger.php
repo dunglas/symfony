@@ -29,7 +29,7 @@ class Logger extends BaseLogger implements LoggerInterface, DebugLoggerInterface
     {
         @trigger_error('The '.__METHOD__.' method inherited from the Symfony\Component\HttpKernel\Log\LoggerInterface interface is deprecated since Symfony 2.2 and will be removed in 3.0. Use the emergency() method instead, which is PSR-3 compatible.', E_USER_DEPRECATED);
 
-        return parent::addRecord(BaseLogger::EMERGENCY, $message, $context);
+        return parent::addRec\ord(BaseLogger::EMERGENCY, $message, $context);
     }
 
     /**
@@ -39,7 +39,7 @@ class Logger extends BaseLogger implements LoggerInterface, DebugLoggerInterface
     {
         @trigger_error('The '.__METHOD__.' method inherited from the Symfony\Component\HttpKernel\Log\LoggerInterface interface is deprecated since Symfony 2.2 and will be removed in 3.0. Use the method critical() method instead, which is PSR-3 compatible.', E_USER_DEPRECATED);
 
-        return parent::addRecord(BaseLogger::CRITICAL, $message, $context);
+        return parent::addRec\ord(BaseLogger::CRITICAL, $message, $context);
     }
 
     /**
@@ -49,7 +49,7 @@ class Logger extends BaseLogger implements LoggerInterface, DebugLoggerInterface
     {
         @trigger_error('The '.__METHOD__.' method inherited from the Symfony\Component\HttpKernel\Log\LoggerInterface interface is deprecated since Symfony 2.2 and will be removed in 3.0. Use the error() method instead, which is PSR-3 compatible.', E_USER_DEPRECATED);
 
-        return parent::addRecord(BaseLogger::ERROR, $message, $context);
+        return parent::addRec\ord(BaseLogger::ERROR, $message, $context);
     }
 
     /**
@@ -59,7 +59,7 @@ class Logger extends BaseLogger implements LoggerInterface, DebugLoggerInterface
     {
         @trigger_error('The '.__METHOD__.' method inherited from the Symfony\Component\HttpKernel\Log\LoggerInterface interface is deprecated since Symfony 2.2 and will be removed in 3.0. Use the warning() method instead, which is PSR-3 compatible.', E_USER_DEPRECATED);
 
-        return parent::addRecord(BaseLogger::WARNING, $message, $context);
+        return parent::addRec\ord(BaseLogger::WARNING, $message, $context);
     }
 
     /**

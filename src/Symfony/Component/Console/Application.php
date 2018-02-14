@@ -366,7 +366,7 @@ class Application
         }
 
         if (null === $command->getDefinition()) {
-            throw new \LogicException(sprintf('Command class "%s" is not correctly initialized. You probably forgot to call the parent constructor.', get_class($command)));
+            throw new \LogicException(sprintf('Command class "%s" is not correctly initialized. You probably forgot to call the parent constructor.', \get_class($command)));
         }
 
         $this->commands[$command->getName()] = $command;
@@ -463,7 +463,7 @@ class Application
             $message = sprintf('There are no commands defined in the "%s" namespace.', $namespace);
 
             if ($alternatives = $this->findAlternatives($namespace, $allNamespaces)) {
-                if (1 == count($alternatives)) {
+                if (1 == \count($alternatives)) {
                     $message .= "\n\nDid you mean this?\n    ";
                 } else {
                     $message .= "\n\nDid you mean one of these?\n    ";
@@ -475,8 +475,8 @@ class Application
             throw new \InvalidArgumentException($message);
         }
 
-        $exact = in_array($namespace, $namespaces, true);
-        if (count($namespaces) > 1 && !$exact) {
+        $exact = \in_array($namespace, $namespaces, true);
+        if (\count($namespaces) > 1 && !$exact) {
             throw new \InvalidArgumentException(sprintf('The namespace "%s" is ambiguous (%s).', $namespace, $this->getAbbreviationSuggestions(array_values($namespaces))));
         }
 
@@ -503,7 +503,7 @@ class Application
         $expr = preg_replace_callback('{([^:]+|)}', function ($matches) { return preg_quote($matches[1]).'[^:]*'; }, $name);
         $commands = preg_grep('{^'.$expr.'}', $allCommands);
 
-        if (empty($commands) || count(preg_grep('{^'.$expr.'$}', $commands)) < 1) {
+        if (empty($commands) || \count(preg_grep('{^'.$expr.'$}', $commands)) < 1) {
             if (false !== $pos = strrpos($name, ':')) {
                 // check if a namespace exists and contains commands
                 $this->findNamespace(substr($name, 0, $pos));
@@ -512,7 +512,7 @@ class Application
             $message = sprintf('Command "%s" is not defined.', $name);
 
             if ($alternatives = $this->findAlternatives($name, $allCommands)) {
-                if (1 == count($alternatives)) {
+                if (1 == \count($alternatives)) {
                     $message .= "\n\nDid you mean this?\n    ";
                 } else {
                     $message .= "\n\nDid you mean one of these?\n    ";
@@ -524,18 +524,18 @@ class Application
         }
 
         // filter out aliases for commands which are already on the list
-        if (count($commands) > 1) {
+        if (\count($commands) > 1) {
             $commandList = $this->commands;
             $commands = array_filter($commands, function ($nameOrAlias) use ($commandList, $commands, &$aliases) {
                 $commandName = $commandList[$nameOrAlias]->getName();
                 $aliases[$nameOrAlias] = $commandName;
 
-                return $commandName === $nameOrAlias || !in_array($commandName, $commands);
+                return $commandName === $nameOrAlias || !\in_array($commandName, $commands);
             });
         }
 
-        $exact = in_array($name, $commands, true) || isset($aliases[$name]);
-        if (!$exact && count($commands) > 1) {
+        $exact = \in_array($name, $commands, true) || isset($aliases[$name]);
+        if (!$exact && \count($commands) > 1) {
             $suggestions = $this->getAbbreviationSuggestions(array_values($commands));
 
             throw new \InvalidArgumentException(sprintf('Command "%s" is ambiguous (%s).', $name, $suggestions));
@@ -563,7 +563,7 @@ class Application
 
         $commands = array();
         foreach ($this->commands as $name => $command) {
-            if ($namespace === $this->extractNamespace($name, substr_count($namespace, ':') + 1)) {
+            if ($namespace === $this->extractNamespace($name, substr_\count($namespace, ':') + 1)) {
                 $commands[$name] = $command;
             }
         }
@@ -582,7 +582,7 @@ class Application
     {
         $abbrevs = array();
         foreach ($names as $name) {
-            for ($len = strlen($name); $len > 0; --$len) {
+            for ($len = \strlen($name); $len > 0; --$len) {
                 $abbrev = substr($name, 0, $len);
                 $abbrevs[$abbrev][] = $name;
             }
@@ -646,20 +646,20 @@ class Application
         $output->writeln('');
 
         do {
-            $title = sprintf('  [%s]  ', get_class($e));
+            $title = sprintf('  [%s]  ', \get_class($e));
 
-            $len = Helper::strlen($title);
+            $len = Helper::\strlen($title);
 
             $width = $this->getTerminalWidth() ? $this->getTerminalWidth() - 1 : PHP_INT_MAX;
             // HHVM only accepts 32 bits integer in str_split, even when PHP_INT_MAX is a 64 bit integer: https://github.com/facebook/hhvm/issues/1327
-            if (defined('HHVM_VERSION') && $width > 1 << 31) {
+            if (\defined('HHVM_VERSION') && $width > 1 << 31) {
                 $width = 1 << 31;
             }
             $lines = array();
             foreach (preg_split('/\r?\n/', trim($e->getMessage())) as $line) {
                 foreach ($this->splitStringByWidth($line, $width - 4) as $line) {
                     // pre-format lines to get the right string length
-                    $lineLength = Helper::strlen($line) + 4;
+                    $lineLength = Helper::\strlen($line) + 4;
                     $lines[] = array($line, $lineLength);
 
                     $len = max($lineLength, $len);
@@ -668,7 +668,7 @@ class Application
 
             $messages = array();
             $messages[] = $emptyLine = sprintf('<error>%s</error>', str_repeat(' ', $len));
-            $messages[] = sprintf('<error>%s%s</error>', $title, str_repeat(' ', max(0, $len - Helper::strlen($title))));
+            $messages[] = sprintf('<error>%s%s</error>', $title, str_repeat(' ', max(0, $len - Helper::\strlen($title))));
             foreach ($lines as $line) {
                 $messages[] = sprintf('<error>  %s  %s</error>', OutputFormatter::escape($line[0]), str_repeat(' ', $len - $line[1]));
             }
@@ -689,7 +689,7 @@ class Application
                     'args' => array(),
                 ));
 
-                for ($i = 0, $count = count($trace); $i < $count; ++$i) {
+                for ($i = 0, $count = \count($trace); $i < $count; ++$i) {
                     $class = isset($trace[$i]['class']) ? $trace[$i]['class'] : '';
                     $type = isset($trace[$i]['type']) ? $trace[$i]['type'] : '';
                     $function = $trace[$i]['function'];
@@ -799,7 +799,7 @@ class Application
 
         if (true === $input->hasParameterOption(array('--no-interaction', '-n'))) {
             $input->setInteractive(false);
-        } elseif (function_exists('posix_isatty') && $this->getHelperSet()->has('question')) {
+        } elseif (\function_exists('posix_isatty') && $this->getHelperSet()->has('question')) {
             $inputStream = $this->getHelperSet()->get('question')->getInputStream();
             if (!@posix_isatty($inputStream) && false === getenv('SHELL_INTERACTIVE')) {
                 $input->setInteractive(false);
@@ -940,13 +940,13 @@ class Application
      */
     private function getSttyColumns()
     {
-        if (!function_exists('proc_open')) {
+        if (!\function_exists('proc_open')) {
             return;
         }
 
         $descriptorspec = array(1 => array('pipe', 'w'), 2 => array('pipe', 'w'));
         $process = proc_open('stty -a | grep columns', $descriptorspec, $pipes, null, null, array('suppress_errors' => true));
-        if (is_resource($process)) {
+        if (\is_resource($process)) {
             $info = stream_get_contents($pipes[1]);
             fclose($pipes[1]);
             fclose($pipes[2]);
@@ -963,13 +963,13 @@ class Application
      */
     private function getConsoleMode()
     {
-        if (!function_exists('proc_open')) {
+        if (!\function_exists('proc_open')) {
             return;
         }
 
         $descriptorspec = array(1 => array('pipe', 'w'), 2 => array('pipe', 'w'));
         $process = proc_open('mode CON', $descriptorspec, $pipes, null, null, array('suppress_errors' => true));
-        if (is_resource($process)) {
+        if (\is_resource($process)) {
             $info = stream_get_contents($pipes[1]);
             fclose($pipes[1]);
             fclose($pipes[2]);
@@ -990,7 +990,7 @@ class Application
      */
     private function getAbbreviationSuggestions($abbrevs)
     {
-        return sprintf('%s, %s%s', $abbrevs[0], $abbrevs[1], count($abbrevs) > 2 ? sprintf(' and %d more', count($abbrevs) - 2) : '');
+        return sprintf('%s, %s%s', $abbrevs[0], $abbrevs[1], \count($abbrevs) > 2 ? sprintf(' and %d more', \count($abbrevs) - 2) : '');
     }
 
     /**
@@ -1008,7 +1008,7 @@ class Application
         $parts = explode(':', $name);
         array_pop($parts);
 
-        return implode(':', null === $limit ? $parts : array_slice($parts, 0, $limit));
+        return implode(':', null === $limit ? $parts : \array_slice($parts, 0, $limit));
     }
 
     /**
@@ -1041,7 +1041,7 @@ class Application
                 }
 
                 $lev = levenshtein($subname, $parts[$i]);
-                if ($lev <= strlen($subname) / 3 || '' !== $subname && false !== strpos($parts[$i], $subname)) {
+                if ($lev <= \strlen($subname) / 3 || '' !== $subname && false !== strpos($parts[$i], $subname)) {
                     $alternatives[$collectionName] = $exists ? $alternatives[$collectionName] + $lev : $lev;
                 } elseif ($exists) {
                     $alternatives[$collectionName] += $threshold;
@@ -1051,7 +1051,7 @@ class Application
 
         foreach ($collection as $item) {
             $lev = levenshtein($name, $item);
-            if ($lev <= strlen($name) / 3 || false !== strpos($item, $name)) {
+            if ($lev <= \strlen($name) / 3 || false !== strpos($item, $name)) {
                 $alternatives[$item] = isset($alternatives[$item]) ? $alternatives[$item] - $lev : $lev;
             }
         }
@@ -1075,10 +1075,10 @@ class Application
     private function splitStringByWidth($string, $width)
     {
         // str_split is not suitable for multi-byte characters, we should use preg_split to get char array properly.
-        // additionally, array_slice() is not enough as some character has doubled width.
+        // additionally, \array_slice() is not enough as some character has doubled width.
         // we need a function to split string not by character count but by string width
 
-        if (!function_exists('mb_strwidth')) {
+        if (!\function_exists('mb_strwidth')) {
             return str_split($string, $width);
         }
 
@@ -1100,7 +1100,7 @@ class Application
             $line = $char;
         }
 
-        $lines[] = count($lines) ? str_pad($line, $width) : $line;
+        $lines[] = \count($lines) ? str_pad($line, $width) : $line;
 
         mb_convert_variables($encoding, 'utf8', $lines);
 
@@ -1121,7 +1121,7 @@ class Application
         $namespaces = array();
 
         foreach ($parts as $part) {
-            if (count($namespaces)) {
+            if (\count($namespaces)) {
                 $namespaces[] = end($namespaces).':'.$part;
             } else {
                 $namespaces[] = $part;

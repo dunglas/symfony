@@ -29,9 +29,9 @@ abstract class AbstractPipes implements PipesInterface
      */
     public function __construct($input)
     {
-        if (is_resource($input)) {
+        if (\is_resource($input)) {
             $this->input = $input;
-        } elseif (is_string($input)) {
+        } elseif (\is_string($input)) {
             $this->inputBuffer = $input;
         } else {
             $this->inputBuffer = (string) $input;

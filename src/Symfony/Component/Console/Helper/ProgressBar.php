@@ -443,7 +443,7 @@ class ProgressBar
         $messages = $this->messages;
         $this->overwrite(preg_replace_callback("{%([a-z\-_]+)(?:\:([^%]+))?%}i", function ($matches) use ($self, $output, $messages) {
             if ($formatter = $self::getPlaceholderFormatterDefinition($matches[1])) {
-                $text = call_user_func($formatter, $self, $output);
+                $text = \call_user_func($formatter, $self, $output);
             } elseif (isset($messages[$matches[1]])) {
                 $text = $messages[$matches[1]];
             } else {
@@ -494,7 +494,7 @@ class ProgressBar
             $this->format = $format;
         }
 
-        $this->formatLineCount = substr_count($this->format, "\n");
+        $this->formatLineCount = substr_\count($this->format, "\n");
     }
 
     /**
@@ -505,7 +505,7 @@ class ProgressBar
     private function setMaxSteps($max)
     {
         $this->max = max(0, (int) $max);
-        $this->stepWidth = $this->max ? Helper::strlen($this->max) : 4;
+        $this->stepWidth = $this->max ? Helper::\strlen($this->max) : 4;
     }
 
     /**

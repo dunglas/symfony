@@ -54,7 +54,7 @@ class FormErrorIterator implements \RecursiveIterator, \SeekableIterator, \Array
                     'The errors must be instances of '.
                     '"\Symfony\Component\Form\FormError" or "%s". Got: "%s".',
                     __CLASS__,
-                    is_object($error) ? get_class($error) : gettype($error)
+                    \is_object($error) ? \get_class($error) : \gettype($error)
                 ));
             }
         }
@@ -223,17 +223,17 @@ class FormErrorIterator implements \RecursiveIterator, \SeekableIterator, \Array
      * {@link \RecursiveIteratorIterator::LEAVES_ONLY} and count the result.
      *
      *     $iterator = new \RecursiveIteratorIterator($form->getErrors(true));
-     *     $count = count(iterator_to_array($iterator));
+     *     $count = \count(iterator_to_array($iterator));
      *
      * Alternatively, set the constructor argument $flatten to true as well.
      *
-     *     $count = count($form->getErrors(true, true));
+     *     $count = \count($form->getErrors(true, true));
      *
      * @return int The number of iterated elements
      */
-    public function count()
+    public function \count()
     {
-        return count($this->errors);
+        return \count($this->errors);
     }
 
     /**

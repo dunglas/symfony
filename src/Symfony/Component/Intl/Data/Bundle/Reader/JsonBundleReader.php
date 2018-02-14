@@ -31,7 +31,7 @@ class JsonBundleReader implements BundleReaderInterface
         $fileName = $path.'/'.$locale.'.json';
 
         // prevent directory traversal attacks
-        if (dirname($fileName) !== $path) {
+        if (\dirname($fileName) !== $path) {
             throw new ResourceBundleNotFoundException(sprintf('The resource bundle "%s" does not exist.', $fileName));
         }
 
@@ -69,7 +69,7 @@ class JsonBundleReader implements BundleReaderInterface
      */
     private static function getLastJsonError()
     {
-        if (function_exists('json_last_error_msg')) {
+        if (\function_exists('json_last_error_msg')) {
             return json_last_error_msg();
         }
 

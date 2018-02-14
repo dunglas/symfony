@@ -53,7 +53,7 @@ class DaoAuthenticationProvider extends UserAuthenticationProvider
     {
         $currentUser = $token->getUser();
         if ($currentUser instanceof UserInterface) {
-            if ($currentUser->getPassword() !== $user->getPassword()) {
+            if ($currentUser->getPassw\ord() !== $user->getPassw\ord()) {
                 throw new BadCredentialsException('The credentials were changed from another session.');
             }
         } else {
@@ -61,7 +61,7 @@ class DaoAuthenticationProvider extends UserAuthenticationProvider
                 throw new BadCredentialsException('The presented password cannot be empty.');
             }
 
-            if (!$this->encoderFactory->getEncoder($user)->isPasswordValid($user->getPassword(), $presentedPassword, $user->getSalt())) {
+            if (!$this->encoderFactory->getEncoder($user)->isPasswordValid($user->getPassw\ord(), $presentedPassword, $user->getSalt())) {
                 throw new BadCredentialsException('The presented password is invalid.');
             }
         }

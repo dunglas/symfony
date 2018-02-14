@@ -196,8 +196,8 @@ EOF
                     $states[] = self::MESSAGE_UNUSED;
                 }
 
-                if (!in_array(self::MESSAGE_UNUSED, $states) && true === $input->getOption('only-unused')
-                    || !in_array(self::MESSAGE_MISSING, $states) && true === $input->getOption('only-missing')) {
+                if (!\in_array(self::MESSAGE_UNUSED, $states) && true === $input->getOption('only-unused')
+                    || !\in_array(self::MESSAGE_MISSING, $states) && true === $input->getOption('only-missing')) {
                     continue;
                 }
 
@@ -257,11 +257,11 @@ EOF
     {
         $string = trim(preg_replace('/\s+/', ' ', $string));
 
-        if (function_exists('mb_strlen') && false !== $encoding = mb_detect_encoding($string)) {
-            if (mb_strlen($string, $encoding) > $length) {
+        if (\function_exists('mb_strlen') && false !== $encoding = mb_detect_encoding($string)) {
+            if (mb_\strlen($string, $encoding) > $length) {
                 return mb_substr($string, 0, $length - 3, $encoding).'...';
             }
-        } elseif (strlen($string) > $length) {
+        } elseif (\strlen($string) > $length) {
             return substr($string, 0, $length - 3).'...';
         }
 

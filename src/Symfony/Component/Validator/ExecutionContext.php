@@ -83,8 +83,8 @@ class ExecutionContext implements ExecutionContextInterface
             $params,
             $this->globalContext->getRoot(),
             $this->propertyPath,
-            // check using func_num_args() to allow passing null values
-            func_num_args() >= 3 ? $invalidValue : $this->value,
+            // check using \func_num_args() to allow passing null values
+            \func_num_args() >= 3 ? $invalidValue : $this->value,
             $plural,
             $code
         ));
@@ -103,8 +103,8 @@ class ExecutionContext implements ExecutionContextInterface
             $parameters,
             $this->globalContext->getRoot(),
             $this->getPropertyPath($subPath),
-            // check using func_num_args() to allow passing null values
-            func_num_args() >= 4 ? $invalidValue : $this->value,
+            // check using \func_num_args() to allow passing null values
+            \func_num_args() >= 4 ? $invalidValue : $this->value,
             $plural,
             $code
         ));
@@ -208,7 +208,7 @@ class ExecutionContext implements ExecutionContextInterface
      */
     public function validateValue($value, $constraints, $subPath = '', $groups = null)
     {
-        $constraints = is_array($constraints) ? $constraints : array($constraints);
+        $constraints = \is_array($constraints) ? $constraints : array($constraints);
 
         if (null === $groups && '' === $subPath) {
             $context = clone $this;

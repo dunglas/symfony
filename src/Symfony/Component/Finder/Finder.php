@@ -626,7 +626,7 @@ class Finder implements \IteratorAggregate, \Countable
         foreach ((array) $dirs as $dir) {
             if (is_dir($dir)) {
                 $resolvedDirs[] = $dir;
-            } elseif ($glob = glob($dir, (defined('GLOB_BRACE') ? GLOB_BRACE : 0) | GLOB_ONLYDIR)) {
+            } elseif ($glob = glob($dir, (\defined('GLOB_BRACE') ? GLOB_BRACE : 0) | GLOB_ONLYDIR)) {
                 $resolvedDirs = array_merge($resolvedDirs, $glob);
             } else {
                 throw new \InvalidArgumentException(sprintf('The "%s" directory does not exist.', $dir));
@@ -649,11 +649,11 @@ class Finder implements \IteratorAggregate, \Countable
      */
     public function getIterator()
     {
-        if (0 === count($this->dirs) && 0 === count($this->iterators)) {
+        if (0 === \count($this->dirs) && 0 === \count($this->iterators)) {
             throw new \LogicException('You must call one of in() or append() methods before iterating over a Finder.');
         }
 
-        if (1 === count($this->dirs) && 0 === count($this->iterators)) {
+        if (1 === \count($this->dirs) && 0 === \count($this->iterators)) {
             return $this->searchInDirectory($this->dirs[0]);
         }
 
@@ -686,7 +686,7 @@ class Finder implements \IteratorAggregate, \Countable
             $this->iterators[] = $iterator->getIterator();
         } elseif ($iterator instanceof \Iterator) {
             $this->iterators[] = $iterator;
-        } elseif ($iterator instanceof \Traversable || is_array($iterator)) {
+        } elseif ($iterator instanceof \Traversable || \is_array($iterator)) {
             $it = new \ArrayIterator();
             foreach ($iterator as $file) {
                 $it->append($file instanceof \SplFileInfo ? $file : new \SplFileInfo($file));
@@ -704,9 +704,9 @@ class Finder implements \IteratorAggregate, \Countable
      *
      * @return int
      */
-    public function count()
+    public function \count()
     {
-        return iterator_count($this->getIterator());
+        return iterator_\count($this->getIterator());
     }
 
     /**

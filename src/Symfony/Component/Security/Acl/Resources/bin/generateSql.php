@@ -35,7 +35,7 @@ $schema = new Schema(array(
 
 $reflection = new ReflectionClass('Doctrine\\DBAL\\Platforms\\AbstractPlatform');
 $finder = new Finder();
-$finder->name('*Platform.php')->in(dirname($reflection->getFileName()));
+$finder->name('*Platform.php')->in(\dirname($reflection->getFileName()));
 foreach ($finder as $file) {
     require_once $file->getPathname();
     $className = 'Doctrine\\DBAL\\Platforms\\'.$file->getBasename('.php');

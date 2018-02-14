@@ -46,7 +46,7 @@ class AccessDecisionManager implements AccessDecisionManagerInterface
         }
 
         $strategyMethod = 'decide'.ucfirst($strategy);
-        if (!is_callable(array($this, $strategyMethod))) {
+        if (!\is_callable(array($this, $strategyMethod))) {
             throw new \InvalidArgumentException(sprintf('The strategy "%s" is not supported.', $strategy));
         }
 

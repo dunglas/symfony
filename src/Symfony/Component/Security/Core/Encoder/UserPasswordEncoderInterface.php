@@ -28,7 +28,7 @@ interface UserPasswordEncoderInterface
      *
      * @return string The encoded password
      */
-    public function encodePassword(UserInterface $user, $plainPassword);
+    public function encodePassw\ord(UserInterface $user, $plainPassword);
 
     /**
      * @param UserInterface $user The user

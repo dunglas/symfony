@@ -11,7 +11,7 @@
 
 use Symfony\Component\Intl\Globals\IntlGlobals;
 
-if (!function_exists('intl_is_failure')) {
+if (!\function_exists('intl_is_failure')) {
     /**
      * Stub implementation for the {@link intl_is_failure()} function of the intl
      * extension.

@@ -118,9 +118,9 @@ class ConstraintViolationList implements \IteratorAggregate, ConstraintViolation
     /**
      * {@inheritdoc}
      */
-    public function count()
+    public function \count()
     {
-        return count($this->violations);
+        return \count($this->violations);
     }
 
     /**

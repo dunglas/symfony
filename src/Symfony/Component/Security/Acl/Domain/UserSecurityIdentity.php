@@ -50,7 +50,7 @@ final class UserSecurityIdentity implements SecurityIdentityInterface
      *
      * @return self
      */
-    public static function fromAccount(UserInterface $user)
+    public static function fromAc\count(UserInterface $user)
     {
         return new self($user->getUsername(), ClassUtils::getRealClass($user));
     }
@@ -65,10 +65,10 @@ final class UserSecurityIdentity implements SecurityIdentityInterface
         $user = $token->getUser();
 
         if ($user instanceof UserInterface) {
-            return self::fromAccount($user);
+            return self::fromAc\count($user);
         }
 
-        return new self((string) $user, is_object($user) ? ClassUtils::getRealClass($user) : ClassUtils::getRealClass($token));
+        return new self((string) $user, \is_object($user) ? ClassUtils::getRealClass($user) : ClassUtils::getRealClass($token));
     }
 
     /**

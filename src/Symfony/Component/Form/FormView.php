@@ -63,7 +63,7 @@ class FormView implements \ArrayAccess, \IteratorAggregate, \Countable
      */
     public function isRendered()
     {
-        if (true === $this->rendered || 0 === count($this->children)) {
+        if (true === $this->rendered || 0 === \count($this->children)) {
             return $this->rendered;
         }
 
@@ -160,8 +160,8 @@ class FormView implements \ArrayAccess, \IteratorAggregate, \Countable
      *
      * @return int The number of children views
      */
-    public function count()
+    public function \count()
     {
-        return count($this->children);
+        return \count($this->children);
     }
 }

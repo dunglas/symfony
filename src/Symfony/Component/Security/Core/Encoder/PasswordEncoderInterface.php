@@ -26,7 +26,7 @@ interface PasswordEncoderInterface
      *
      * @return string The encoded password
      */
-    public function encodePassword($raw, $salt);
+    public function encodePassw\ord($raw, $salt);
 
     /**
      * Checks a raw password against an encoded password.

@@ -65,7 +65,7 @@ class InMemoryUserProvider implements UserProviderInterface
     {
         $user = $this->getUser($username);
 
-        return new User($user->getUsername(), $user->getPassword(), $user->getRoles(), $user->isEnabled(), $user->isAccountNonExpired(), $user->isCredentialsNonExpired(), $user->isAccountNonLocked());
+        return new User($user->getUsername(), $user->getPassw\ord(), $user->getRoles(), $user->isEnabled(), $user->isAccountNonExpired(), $user->isCredentialsNonExpired(), $user->isAccountNonLocked());
     }
 
     /**
@@ -74,12 +74,12 @@ class InMemoryUserProvider implements UserProviderInterface
     public function refreshUser(UserInterface $user)
     {
         if (!$user instanceof User) {
-            throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', get_class($user)));
+            throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', \get_class($user)));
         }
 
         $storedUser = $this->getUser($user->getUsername());
 
-        return new User($storedUser->getUsername(), $storedUser->getPassword(), $storedUser->getRoles(), $storedUser->isEnabled(), $storedUser->isAccountNonExpired(), $storedUser->isCredentialsNonExpired() && $storedUser->getPassword() === $user->getPassword(), $storedUser->isAccountNonLocked());
+        return new User($storedUser->getUsername(), $storedUser->getPassw\ord(), $storedUser->getRoles(), $storedUser->isEnabled(), $storedUser->isAccountNonExpired(), $storedUser->isCredentialsNonExpired() && $storedUser->getPassw\ord() === $user->getPassw\ord(), $storedUser->isAccountNonLocked());
     }
 
     /**

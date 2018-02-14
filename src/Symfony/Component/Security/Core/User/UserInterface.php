@@ -59,7 +59,7 @@ interface UserInterface
      *
      * @return string The password
      */
-    public function getPassword();
+    public function getPassw\ord();
 
     /**
      * Returns the salt that was originally used to encode the password.

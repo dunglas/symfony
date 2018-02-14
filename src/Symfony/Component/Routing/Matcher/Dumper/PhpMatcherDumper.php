@@ -105,7 +105,7 @@ EOF;
 
 $code
 
-        throw 0 < count(\$allow) ? new MethodNotAllowedException(array_unique(\$allow)) : new ResourceNotFoundException();
+        throw 0 < \count(\$allow) ? new MethodNotAllowedException(array_unique(\$allow)) : new ResourceNotFoundException();
     }
 EOF;
     }
@@ -164,7 +164,7 @@ EOF;
     {
         $code = '';
         $prefix = $collection->getPrefix();
-        $optimizable = 1 < strlen($prefix) && 1 < count($collection->all());
+        $optimizable = 1 < \strlen($prefix) && 1 < \count($collection->all());
         $optimizedPrefix = $parentPrefix;
 
         if ($optimizable) {
@@ -213,13 +213,13 @@ EOF;
         $methods = $route->getMethods();
 
         // GET and HEAD are equivalent
-        if (in_array('GET', $methods) && !in_array('HEAD', $methods)) {
+        if (\in_array('GET', $methods) && !\in_array('HEAD', $methods)) {
             $methods[] = 'HEAD';
         }
 
-        $supportsTrailingSlash = $supportsRedirections && (!$methods || in_array('GET', $methods));
+        $supportsTrailingSlash = $supportsRedirections && (!$methods || \in_array('GET', $methods));
 
-        if (!count($compiledRoute->getPathVariables()) && false !== preg_match('#^(.)\^(?P<url>.*?)\$\1#', $compiledRoute->getRegex(), $m)) {
+        if (!\count($compiledRoute->getPathVariables()) && false !== preg_match('#^(.)\^(?P<url>.*?)\$\1#', $compiledRoute->getRegex(), $m)) {
             if ($supportsTrailingSlash && '/' === substr($m['url'], -1)) {
                 $conditions[] = sprintf("%s === rtrim(\$pathinfo, '/')", var_export(rtrim(str_replace('\\', '', $m['url']), '/'), true));
                 $hasTrailingSlash = true;
@@ -263,7 +263,7 @@ EOF;
             $code .= <<<EOF
             if ('/' === substr(\$pathinfo, -1)) {
                 // no-op
-            } elseif (!in_array(\$this->context->getMethod(), array('HEAD', 'GET'))) {
+            } elseif (!\in_array(\$this->context->getMethod(), array('HEAD', 'GET'))) {
                 \$allow[] = 'GET';
                 goto $gotoname;
             } else {
@@ -282,7 +282,7 @@ EOF;
             $code .= <<<EOF
             \$requiredSchemes = $schemes;
             if (!isset(\$requiredSchemes[\$this->context->getScheme()])) {
-                if (!in_array(\$this->context->getMethod(), array('HEAD', 'GET'))) {
+                if (!\in_array(\$this->context->getMethod(), array('HEAD', 'GET'))) {
                     \$allow[] = 'GET';
                     goto $gotoname;
                 }
@@ -295,7 +295,7 @@ EOF;
         }
 
         if ($methods) {
-            if (1 === count($methods)) {
+            if (1 === \count($methods)) {
                 $code .= <<<EOF
             if (\$this->context->getMethod() != '$methods[0]') {
                 \$allow[] = '$methods[0]';
@@ -307,7 +307,7 @@ EOF;
             } else {
                 $methods = implode("', '", $methods);
                 $code .= <<<EOF
-            if (!in_array(\$this->context->getMethod(), array('$methods'))) {
+            if (!\in_array(\$this->context->getMethod(), array('$methods'))) {
                 \$allow = array_merge(\$allow, array('$methods'));
                 goto $gotoname;
             }
