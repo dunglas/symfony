@@ -20,6 +20,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Synchronizer\SchemaSynchronizer;
 use Doctrine\DBAL\Schema\Synchronizer\SingleDatabaseSynchronizer;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Symfony\Component\Messenger\Exception\InvalidArgumentException;
 use Symfony\Component\Messenger\Exception\TransportException;
 
@@ -52,6 +53,7 @@ class Connection
     private $driverConnection;
     private $schemaSynchronizer;
     private $autoSetup;
+
 
     public function __construct(array $configuration, DBALConnection $driverConnection, SchemaSynchronizer $schemaSynchronizer = null)
     {
@@ -129,8 +131,8 @@ class Connection
             null,
             null,
             null,
-            Type::DATETIME,
-            Type::DATETIME,
+            'datetime',
+            'datetime',
         ]);
 
         return $this->driverConnection->lastInsertId();
@@ -169,7 +171,7 @@ class Connection
                 $now,
                 $doctrineEnvelope['id'],
             ], [
-                Type::DATETIME,
+                'datetime',
             ]);
 
             $this->driverConnection->commit();
@@ -279,8 +281,8 @@ class Connection
                 $now,
                 $this->configuration['queue_name'],
             ], [
-                Type::DATETIME,
-                Type::DATETIME,
+                'datetime',
+                'datetime',
             ]);
     }
 
@@ -314,20 +316,20 @@ class Connection
     {
         $schema = new Schema([], [], $this->driverConnection->getSchemaManager()->createSchemaConfig());
         $table = $schema->createTable($this->configuration['table_name']);
-        $table->addColumn('id', Type::BIGINT)
+        $table->addColumn('id', 'bigint')
             ->setAutoincrement(true)
             ->setNotnull(true);
-        $table->addColumn('body', Type::TEXT)
+        $table->addColumn('body', 'text')
             ->setNotnull(true);
-        $table->addColumn('headers', Type::TEXT)
+        $table->addColumn('headers', 'text')
             ->setNotnull(true);
-        $table->addColumn('queue_name', Type::STRING)
+        $table->addColumn('queue_name', 'string')
             ->setNotnull(true);
-        $table->addColumn('created_at', Type::DATETIME)
+        $table->addColumn('created_at', 'datetime')
             ->setNotnull(true);
-        $table->addColumn('available_at', Type::DATETIME)
+        $table->addColumn('available_at', 'datetime')
             ->setNotnull(true);
-        $table->addColumn('delivered_at', Type::DATETIME)
+        $table->addColumn('delivered_at', 'datetime')
             ->setNotnull(false);
         $table->setPrimaryKey(['id']);
         $table->addIndex(['queue_name']);

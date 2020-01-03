@@ -126,11 +126,11 @@ class DoctrineExtractor implements PropertyListExtractorInterface, PropertyTypeE
             $nullable = $metadata instanceof ClassMetadataInfo && $metadata->isNullable($property);
 
             switch ($typeOfField) {
-                case DBALType::DATE:
-                case DBALType::DATETIME:
-                case DBALType::DATETIMETZ:
+                case 'date':
+                case 'datetime':
+                case 'datetimez':
                 case 'vardatetime':
-                case DBALType::TIME:
+                case 'time':
                     return [new Type(Type::BUILTIN_TYPE_OBJECT, $nullable, 'DateTime')];
 
                 case 'date_immutable':
@@ -142,14 +142,12 @@ class DoctrineExtractor implements PropertyListExtractorInterface, PropertyTypeE
                 case 'dateinterval':
                     return [new Type(Type::BUILTIN_TYPE_OBJECT, $nullable, 'DateInterval')];
 
-                case DBALType::TARRAY:
+                case 'array':
+                case 'json_array':
                     return [new Type(Type::BUILTIN_TYPE_ARRAY, $nullable, null, true)];
 
-                case DBALType::SIMPLE_ARRAY:
+                case 'simple_array':
                     return [new Type(Type::BUILTIN_TYPE_ARRAY, $nullable, null, true, new Type(Type::BUILTIN_TYPE_INT), new Type(Type::BUILTIN_TYPE_STRING))];
-
-                case DBALType::JSON_ARRAY:
-                    return [new Type(Type::BUILTIN_TYPE_ARRAY, $nullable, null, true)];
 
                 default:
                     $builtinType = $this->getPhpType($typeOfField);
@@ -225,28 +223,28 @@ class DoctrineExtractor implements PropertyListExtractorInterface, PropertyTypeE
     private function getPhpType(string $doctrineType): ?string
     {
         switch ($doctrineType) {
-            case DBALType::SMALLINT:
-            case DBALType::INTEGER:
+            case 'smallint':
+            case 'integer':
                 return Type::BUILTIN_TYPE_INT;
 
-            case DBALType::FLOAT:
+            case 'float':
                 return Type::BUILTIN_TYPE_FLOAT;
 
-            case DBALType::BIGINT:
-            case DBALType::STRING:
-            case DBALType::TEXT:
-            case DBALType::GUID:
-            case DBALType::DECIMAL:
+            case 'bigint':
+            case 'string':
+            case 'text':
+            case 'guid':
+            case 'decimal':
                 return Type::BUILTIN_TYPE_STRING;
 
-            case DBALType::BOOLEAN:
+            case 'boolean':
                 return Type::BUILTIN_TYPE_BOOL;
 
-            case DBALType::BLOB:
+            case 'blob':
             case 'binary':
                 return Type::BUILTIN_TYPE_RESOURCE;
 
-            case DBALType::OBJECT:
+            case 'object':
                 return Type::BUILTIN_TYPE_OBJECT;
         }
 
