@@ -176,4 +176,15 @@ class ClientTest extends TestCase
 
         unlink($source);
     }
+
+    public function testAcceptHeaderNotSet()
+    {
+        $client = new Client(new TestHttpKernel());
+
+        $client->request('GET', '/');
+        $this->assertFalse($client->getRequest()->headers->has('Accept'));
+
+        $client->request('GET', '/', [], [], ['HTTP_ACCEPT' => 'application/ld+json']);
+        $this->assertSame('application/ld+json', $client->getRequest()->headers->get('Accept'));
+    }
 }
