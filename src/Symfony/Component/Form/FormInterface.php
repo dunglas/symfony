@@ -16,6 +16,8 @@ use Symfony\Component\PropertyAccess\PropertyPathInterface;
 /**
  * A form group bundling multiple forms in a hierarchical structure.
  *
+ * @template T
+ *
  * @author Bernhard Schussek <bschussek@gmail.com>
  */
 interface FormInterface extends \ArrayAccess, \Traversable, \Countable
@@ -102,7 +104,7 @@ interface FormInterface extends \ArrayAccess, \Traversable, \Countable
     /**
      * Updates the form with default model data.
      *
-     * @param mixed $modelData The data formatted as expected for the underlying object
+     * @param T $modelData The data formatted as expected for the underlying object
      *
      * @return $this
      *
@@ -118,7 +120,7 @@ interface FormInterface extends \ArrayAccess, \Traversable, \Countable
     /**
      * Returns the model data in the format needed for the underlying object.
      *
-     * @return mixed When the field is not submitted, the default data is returned.
+     * @return T When the field is not submitted, the default data is returned.
      *               When the field is submitted, the default data has been bound
      *               to the submitted view data.
      *
