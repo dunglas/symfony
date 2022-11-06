@@ -326,10 +326,20 @@ class Response
     /**
      * Sends HTTP headers.
      *
+     * @param null|positive-int $statusCode The status code to use. Override the statusCode property if set and not null.
+     *
      * @return $this
      */
     public function sendHeaders(): static
     {
+        if (1 > \func_num_args()) {
+            trigger_deprecation('symfony/http-foundation', '6.2', 'Calling "%s()" without any arguments is deprecated, pass null explicitly instead.', __METHOD__);
+
+            $statusCode = null;
+        } else {
+            $statusCode = func_get_arg(0) ?: null;
+        }
+
         // headers have already been sent by the developer
         if (headers_sent()) {
             return $this;
@@ -348,8 +358,23 @@ class Response
             header('Set-Cookie: '.$cookie, false, $this->statusCode);
         }
 
+        if ($statusCode) {
+            if (\function_exists('headers_send')) {
+                headers_send($statusCode);
+
+                return $this;
+            }
+
+            if ($statusCode >= 100 && $statusCode < 200) {
+                // skip informational responses if not supported by the SAPI
+                return $this;
+            }
+        } else {
+            $statusCode = $this->statusCode;
+        }
+
         // status
-        header(sprintf('HTTP/%s %s %s', $this->version, $this->statusCode, $this->statusText), true, $this->statusCode);
+        header(sprintf('HTTP/%s %s %s', $this->version, $statusCode, $this->statusText), true, $statusCode);
 
         return $this;
     }
@@ -373,7 +398,7 @@ class Response
      */
     public function send(): static
     {
-        $this->sendHeaders();
+        $this->sendHeaders(null);
         $this->sendContent();
 
         if (\function_exists('fastcgi_finish_request')) {

@@ -57,6 +57,11 @@ FrameworkBundle
 
  * Deprecate the `notifier.logger_notification_listener` service, use the `notifier.notification_logger_listener` service instead
 
+HttpFoundation
+--------------
+
+* Deprecate calling `Response::sendHeaders()` without any arguments
+
 HttpKernel
 ----------
 

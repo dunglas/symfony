@@ -108,8 +108,8 @@ class StreamedResponseTest extends TestCase
         $this->assertInstanceOf(StreamedResponse::class, $response->sendContent());
 
         $response = new StreamedResponse(function () {});
-        $this->assertInstanceOf(StreamedResponse::class, $response->sendHeaders());
-        $this->assertInstanceOf(StreamedResponse::class, $response->sendHeaders());
+        $this->assertInstanceOf(StreamedResponse::class, $response->sendHeaders(null));
+        $this->assertInstanceOf(StreamedResponse::class, $response->sendHeaders(null));
     }
 
     public function testSetNotModified()

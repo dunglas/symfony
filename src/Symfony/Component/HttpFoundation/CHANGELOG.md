@@ -7,6 +7,7 @@ CHANGELOG
  * Add `ParameterBag::getEnum()`
  * Create migration for session table when pdo handler is used
  * Add support for Relay PHP extension for Redis
+ * The `Response::sendHeaders()` method now takes an HTTP status code as parameter, allowing to send informational responses such as Early Hints responses (103 status code)
 
 6.2
 ---
@@ -112,7 +113,7 @@ CHANGELOG
    make sure to run `ALTER TABLE sessions MODIFY sess_lifetime INTEGER UNSIGNED NOT NULL` to
    update your database.
  * `PdoSessionHandler` now precalculates the expiry timestamp in the lifetime column,
-    make sure to run `CREATE INDEX expiry ON sessions (sess_lifetime)` to update your database
+    make sure to run `CREATE INDEX EXPIRY ON sessions (sess_lifetime)` to update your database
     to speed up garbage collection of expired sessions.
  * added `SessionHandlerFactory` to create session handlers with a DSN
  * added `IpUtils::anonymize()` to help with GDPR compliance.
