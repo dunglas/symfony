@@ -677,4 +677,15 @@ class AbstractControllerTest extends TestCase
         $this->assertContains($link1, $links);
         $this->assertContains($link2, $links);
     }
+
+    public function testSendEarlyHints()
+    {
+        $controller = $this->createController();
+        $response = $controller->sendEarlyHints([
+            (new Link(href: '/style.css'))->withAttribute('as', 'stylesheet'),
+            (new Link(href: '/script.js'))->withAttribute('as', 'script'),
+        ]);
+
+        $this->assertSame('</style.css>; rel="preload"; as="stylesheet",</script.js>; rel="preload"; as="script"', $response->headers->get('Link'));
+    }
 }
