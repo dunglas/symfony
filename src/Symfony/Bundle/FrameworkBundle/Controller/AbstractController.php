@@ -410,7 +410,7 @@ abstract class AbstractController implements ServiceSubscriberInterface
     /**
      * @param LinkInterface[] $links
      */
-    protected function sendEarlyHints(iterable $links, ?Response $response = null): Response
+    protected function sendEarlyHints(iterable $links, Response $response = null): Response
     {
         if (!class_exists(HttpHeaderSerializer::class)) {
             throw new \LogicException('You cannot use the "sendEarlyHints" method if the WebLink component is not available. Try running "composer require symfony/web-link".');
