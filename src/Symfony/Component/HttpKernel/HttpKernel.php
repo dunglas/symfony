@@ -121,7 +121,7 @@ class HttpKernel implements HttpKernelInterface, TerminableInterface
             }
         }
 
-        $response->sendHeaders(null);
+        $response->sendHeaders();
         $response->sendContent();
 
         $this->terminate($request, $response);

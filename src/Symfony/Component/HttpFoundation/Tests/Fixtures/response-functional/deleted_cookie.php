@@ -57,4 +57,4 @@ $session->invalidate();
 
 $listener->onKernelResponse(new ResponseEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $r));
 
-$r->sendHeaders(null);
+$r->sendHeaders();

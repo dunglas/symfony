@@ -38,7 +38,7 @@ class ResponseTest extends ResponseTestCase
     public function testSendHeaders()
     {
         $response = new Response();
-        $headers = $response->sendHeaders(null);
+        $headers = $response->sendHeaders();
         $this->assertSame($response, $headers);
     }
 
@@ -50,7 +50,7 @@ class ResponseTest extends ResponseTestCase
         // Informational responses must not override the main status code
         $this->assertSame(200, $response->getStatusCode());
 
-        $response->sendHeaders(null);
+        $response->sendHeaders();
     }
 
     public function testSend()

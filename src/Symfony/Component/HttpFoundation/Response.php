@@ -414,7 +414,7 @@ class Response
      */
     public function send(): static
     {
-        $this->sendHeaders(null);
+        $this->sendHeaders();
         $this->sendContent();
 
         if (\function_exists('fastcgi_finish_request')) {
