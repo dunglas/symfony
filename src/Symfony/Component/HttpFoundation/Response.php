@@ -361,6 +361,11 @@ class Response
 
             $replace = 0 === strcasecmp($name, 'Content-Type');
 
+            if (null !== $previousValues && array_diff($previousValues, $values)) {
+                header_remove($name);
+                $previousValues = null;
+            }
+
             $newValues = null === $previousValues ? $values : array_diff($values, $previousValues);
             foreach ($newValues as $value) {
                 header($name.': '.$value, $replace, $this->statusCode);
