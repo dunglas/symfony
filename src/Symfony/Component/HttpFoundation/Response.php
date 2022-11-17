@@ -330,7 +330,7 @@ class Response
      *
      * @return $this
      */
-    public function sendHeaders(): static
+    public function sendHeaders(/* ?int $statusCode = null */): static
     {
         if (1 > \func_num_args()) {
             trigger_deprecation('symfony/http-foundation', '6.2', 'Calling "%s()" without any arguments is deprecated, pass null explicitly instead.', __METHOD__);
