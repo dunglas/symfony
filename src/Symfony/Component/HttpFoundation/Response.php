@@ -212,8 +212,6 @@ class Response
     ];
 
     /**
-     * @var array<string, bool>
-     *
      * Tracks headers already sent in informational responses
      */
     private array $sentHeaders;
