@@ -63,7 +63,7 @@ class StreamedResponse extends Response
      *
      * @return $this
      */
-    public function sendHeaders(): static
+    public function sendHeaders(/* ?int $statusCode = null */): static
     {
         if ($this->headersSent) {
             return $this;

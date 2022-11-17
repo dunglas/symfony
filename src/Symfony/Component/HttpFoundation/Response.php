@@ -212,6 +212,13 @@ class Response
     ];
 
     /**
+     * @var array<string, bool>
+     *
+     * Tracks headers already sent in informational responses
+     */
+    private array $sentHeaders;
+
+    /**
      * @param int $status The HTTP status code (200 "OK" by default)
      *
      * @throws \InvalidArgumentException When the HTTP status code is not valid
@@ -332,24 +339,35 @@ class Response
      */
     public function sendHeaders(/* ?int $statusCode = null */): static
     {
-        if (1 > \func_num_args()) {
-            trigger_deprecation('symfony/http-foundation', '6.2', 'Calling "%s()" without any arguments is deprecated, pass null explicitly instead.', __METHOD__);
-
-            $statusCode = null;
-        } else {
-            $statusCode = func_get_arg(0) ?: null;
-        }
-
         // headers have already been sent by the developer
         if (headers_sent()) {
             return $this;
         }
 
+        $statusCode = \func_num_args() > 0 ? func_get_arg(0) : null;
+        $informationalResponse = $statusCode >= 100 && $statusCode < 200;
+        if ($informationalResponse && !\function_exists('headers_send')) {
+            // skip informational responses if not supported by the SAPI
+            return $this;
+        }
+
         // headers
         foreach ($this->headers->allPreserveCaseWithoutCookies() as $name => $values) {
+            $previousValues = $this->sentHeaders[$name] ?? null;
+            if ($previousValues === $values) {
+                // Header already sent in a previous response, it will be automatically copied in this response by PHP
+                continue;
+            }
+
             $replace = 0 === strcasecmp($name, 'Content-Type');
-            foreach ($values as $value) {
+
+            $newValues = null === $previousValues ? $values : array_diff($values, $previousValues);
+            foreach ($newValues as $value) {
                 header($name.': '.$value, $replace, $this->statusCode);
+            }
+
+            if ($informationalResponse) {
+                $this->sentHeaders[$name] = $values;
             }
         }
 
@@ -358,20 +376,13 @@ class Response
             header('Set-Cookie: '.$cookie, false, $this->statusCode);
         }
 
-        if ($statusCode) {
-            if (\function_exists('headers_send')) {
-                headers_send($statusCode);
+        if ($informationalResponse) {
+            headers_send($statusCode);
 
-                return $this;
-            }
-
-            if ($statusCode >= 100 && $statusCode < 200) {
-                // skip informational responses if not supported by the SAPI
-                return $this;
-            }
-        } else {
-            $statusCode = $this->statusCode;
+            return $this;
         }
+
+        $statusCode ??= $this->statusCode;
 
         // status
         header(sprintf('HTTP/%s %s %s', $this->version, $statusCode, $this->statusText), true, $statusCode);

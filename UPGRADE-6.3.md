@@ -60,7 +60,7 @@ FrameworkBundle
 HttpFoundation
 --------------
 
-* Deprecate calling `Response::sendHeaders()` without any arguments
+ * `Response::sendHeaders()` now takes an optional `$statusCode` parameter
 
 HttpKernel
 ----------
