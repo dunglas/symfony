@@ -331,11 +331,11 @@ class Response
     /**
      * Sends HTTP headers.
      *
-     * @param null|positive-int $statusCode The status code to use. Override the statusCode property if set and not null.
+     * @param null|positive-int $statusCode The status code to use, override the statusCode property if set and not null
      *
      * @return $this
      */
-    public function sendHeaders(/* ?int $statusCode = null */): static
+    public function sendHeaders(/* int $statusCode = null */): static
     {
         // headers have already been sent by the developer
         if (headers_sent()) {

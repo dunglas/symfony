@@ -60,8 +60,6 @@ abstract class AbstractController implements ServiceSubscriberInterface
      */
     protected $container;
 
-    private ?HttpHeaderSerializer $httpHeaderSerializer = null;
-
     #[Required]
     public function setContainer(ContainerInterface $container): ?ContainerInterface
     {
@@ -96,6 +94,7 @@ abstract class AbstractController implements ServiceSubscriberInterface
             'security.token_storage' => '?'.TokenStorageInterface::class,
             'security.csrf.token_manager' => '?'.CsrfTokenManagerInterface::class,
             'parameter_bag' => '?'.ContainerBagInterface::class,
+            'web_link.http_header_serializer' => '?'.HttpHeaderSerializer::class,
         ];
     }
 
@@ -412,32 +411,24 @@ abstract class AbstractController implements ServiceSubscriberInterface
      */
     protected function sendEarlyHints(iterable $links, Response $response = null): Response
     {
-        if (!class_exists(HttpHeaderSerializer::class)) {
+        if (!$this->container->has('web_link.http_header_serializer')) {
             throw new \LogicException('You cannot use the "sendEarlyHints" method if the WebLink component is not available. Try running "composer require symfony/web-link".');
         }
 
-        if (null === $response) {
-            $response = new Response();
-        }
+        $response ??= new Response();
 
-        if (null === $this->httpHeaderSerializer) {
-            $this->httpHeaderSerializer = new HttpHeaderSerializer();
-        }
-
-        $response->headers->set('Link', $this->httpHeaderSerializer->serialize($this->populateEarlyHints($links)), false);
-        $response->sendHeaders(103);
-
-        return $response;
-    }
-
-    private function populateEarlyHints(iterable $links): \Generator
-    {
+        $populatedLinks = [];
         foreach ($links as $link) {
             if ($link instanceof EvolvableLinkInterface && !$link->getRels()) {
                 $link = $link->withRel('preload');
             }
 
-            yield $link;
+            $populatedLinks[] = $link;
         }
+
+        $response->headers->set('Link', $this->container->get('web_link.http_header_serializer')->serialize($populatedLinks), false);
+        $response->sendHeaders(103);
+
+        return $response;
     }
 }
