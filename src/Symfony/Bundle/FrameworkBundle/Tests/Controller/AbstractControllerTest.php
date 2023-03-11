@@ -45,6 +45,7 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\User\InMemoryUser;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\WebLink\HttpHeaderSerializer;
 use Symfony\Component\WebLink\Link;
 use Twig\Environment;
 
@@ -681,7 +682,12 @@ class AbstractControllerTest extends TestCase
 
     public function testSendEarlyHints()
     {
+        $container = new Container();
+        $container->set('web_link.http_header_serializer', new HttpHeaderSerializer());
+
         $controller = $this->createController();
+        $controller->setContainer($container);
+
         $response = $controller->sendEarlyHints([
             (new Link(href: '/style.css'))->withAttribute('as', 'stylesheet'),
             (new Link(href: '/script.js'))->withAttribute('as', 'script'),
