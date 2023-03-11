@@ -69,9 +69,12 @@ class StreamedResponse extends Response
             return $this;
         }
 
-        $this->headersSent = true;
+        $statusCode = \func_num_args() > 0 ? func_get_arg(0) : null;
+        if ($statusCode < 100 || $statusCode >= 200) {
+            $this->headersSent = true;
+        }
 
-        return parent::sendHeaders(...\func_get_args());
+        return parent::sendHeaders($statusCode);
     }
 
     /**

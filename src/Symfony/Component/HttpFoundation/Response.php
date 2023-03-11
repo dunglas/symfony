@@ -212,7 +212,7 @@ class Response
     ];
 
     /**
-     * Tracks headers already sent in informational responses
+     * Tracks headers already sent in informational responses.
      */
     private array $sentHeaders;
 
