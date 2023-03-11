@@ -430,9 +430,6 @@ abstract class AbstractController implements ServiceSubscriberInterface
         return $response;
     }
 
-    /**
-     * @internal
-     */
     private function populateEarlyHints(iterable $links): \Generator
     {
         foreach ($links as $link) {
