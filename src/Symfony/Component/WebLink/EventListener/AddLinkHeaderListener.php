@@ -31,8 +31,7 @@ class AddLinkHeaderListener implements EventSubscriberInterface
 {
     public function __construct(
         private readonly HttpHeaderSerializer $serializer = new HttpHeaderSerializer(),
-    )
-    {
+    ) {
     }
 
     public function onKernelResponse(ResponseEvent $event): void
