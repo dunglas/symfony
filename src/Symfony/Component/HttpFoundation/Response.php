@@ -387,6 +387,9 @@ class Response
         }
 
         if ($informationalResponse) {
+            /**
+             * @psalm-suppress UndefinedFunction
+             */
             headers_send($statusCode);
 
             return $this;
